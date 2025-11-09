@@ -1,0 +1,157 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\myne\\code\\dotnet\\v9\\CourtBooking\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{5A908BCC-E7C8-48BA-BA57-C213BA2D2321}|CourtBooking.Server\\CourtBooking.Server.csproj|c:\\myne\\code\\dotnet\\v9\\courtbooking\\courtbooking.server\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5A908BCC-E7C8-48BA-BA57-C213BA2D2321}|CourtBooking.Server\\CourtBooking.Server.csproj|solutionrelative:courtbooking.server\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5A908BCC-E7C8-48BA-BA57-C213BA2D2321}|CourtBooking.Server\\CourtBooking.Server.csproj|c:\\myne\\code\\dotnet\\v9\\courtbooking\\courtbooking.server\\controllers\\bookingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5A908BCC-E7C8-48BA-BA57-C213BA2D2321}|CourtBooking.Server\\CourtBooking.Server.csproj|solutionrelative:courtbooking.server\\controllers\\bookingscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CC2F9EFE-C195-0A74-D7F0-4EDF22368AEE}|courtbooking.client\\courtbooking.client.esproj|c:\\myne\\code\\dotnet\\v9\\courtbooking\\courtbooking.client\\src\\login.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{CC2F9EFE-C195-0A74-D7F0-4EDF22368AEE}|courtbooking.client\\courtbooking.client.esproj|solutionrelative:courtbooking.client\\src\\login.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CC2F9EFE-C195-0A74-D7F0-4EDF22368AEE}|courtbooking.client\\courtbooking.client.esproj|c:\\myne\\code\\dotnet\\v9\\courtbooking\\courtbooking.client\\src\\calendar.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{CC2F9EFE-C195-0A74-D7F0-4EDF22368AEE}|courtbooking.client\\courtbooking.client.esproj|solutionrelative:courtbooking.client\\src\\calendar.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CC2F9EFE-C195-0A74-D7F0-4EDF22368AEE}|courtbooking.client\\courtbooking.client.esproj|c:\\myne\\code\\dotnet\\v9\\courtbooking\\courtbooking.client\\src\\app.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{CC2F9EFE-C195-0A74-D7F0-4EDF22368AEE}|courtbooking.client\\courtbooking.client.esproj|solutionrelative:courtbooking.client\\src\\app.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5A908BCC-E7C8-48BA-BA57-C213BA2D2321}|CourtBooking.Server\\CourtBooking.Server.csproj|c:\\myne\\code\\dotnet\\v9\\courtbooking\\courtbooking.server\\migrations\\20251106185310_move description to exteneded props.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5A908BCC-E7C8-48BA-BA57-C213BA2D2321}|CourtBooking.Server\\CourtBooking.Server.csproj|solutionrelative:courtbooking.server\\migrations\\20251106185310_move description to exteneded props.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5A908BCC-E7C8-48BA-BA57-C213BA2D2321}|CourtBooking.Server\\CourtBooking.Server.csproj|c:\\myne\\code\\dotnet\\v9\\courtbooking\\courtbooking.server\\models\\reservation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5A908BCC-E7C8-48BA-BA57-C213BA2D2321}|CourtBooking.Server\\CourtBooking.Server.csproj|solutionrelative:courtbooking.server\\models\\reservation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5A908BCC-E7C8-48BA-BA57-C213BA2D2321}|CourtBooking.Server\\CourtBooking.Server.csproj|c:\\myne\\code\\dotnet\\v9\\courtbooking\\courtbooking.server\\controllers\\authendpoints.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5A908BCC-E7C8-48BA-BA57-C213BA2D2321}|CourtBooking.Server\\CourtBooking.Server.csproj|solutionrelative:courtbooking.server\\controllers\\authendpoints.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 1,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedHeight": 226,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{e506b91c-c606-466a-90a9-123d1d1e12b3}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "UsersController.cs",
+              "DocumentMoniker": "C:\\myne\\code\\dotnet\\v9\\CourtBooking\\CourtBooking.Server\\Controllers\\UsersController.cs",
+              "RelativeDocumentMoniker": "CourtBooking.Server\\Controllers\\UsersController.cs",
+              "ToolTip": "C:\\myne\\code\\dotnet\\v9\\CourtBooking\\CourtBooking.Server\\Controllers\\UsersController.cs",
+              "RelativeToolTip": "CourtBooking.Server\\Controllers\\UsersController.cs",
+              "ViewState": "AgIAAF8AAAAAAAAAAAAYwG4AAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-07T07:22:39.35Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "BookingsController.cs",
+              "DocumentMoniker": "C:\\myne\\code\\dotnet\\v9\\CourtBooking\\CourtBooking.Server\\Controllers\\BookingsController.cs",
+              "RelativeDocumentMoniker": "CourtBooking.Server\\Controllers\\BookingsController.cs",
+              "ToolTip": "C:\\myne\\code\\dotnet\\v9\\CourtBooking\\CourtBooking.Server\\Controllers\\BookingsController.cs",
+              "RelativeToolTip": "CourtBooking.Server\\Controllers\\BookingsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAA5AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-06T04:31:38.675Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "20251106185310_Move description to exteneded props.cs",
+              "DocumentMoniker": "C:\\myne\\code\\dotnet\\v9\\CourtBooking\\CourtBooking.Server\\Migrations\\20251106185310_Move description to exteneded props.cs",
+              "RelativeDocumentMoniker": "CourtBooking.Server\\Migrations\\20251106185310_Move description to exteneded props.cs",
+              "ToolTip": "C:\\myne\\code\\dotnet\\v9\\CourtBooking\\CourtBooking.Server\\Migrations\\20251106185310_Move description to exteneded props.cs",
+              "RelativeToolTip": "CourtBooking.Server\\Migrations\\20251106185310_Move description to exteneded props.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-06T18:53:10.996Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Reservation.cs",
+              "DocumentMoniker": "C:\\myne\\code\\dotnet\\v9\\CourtBooking\\CourtBooking.Server\\Models\\Reservation.cs",
+              "RelativeDocumentMoniker": "CourtBooking.Server\\Models\\Reservation.cs",
+              "ToolTip": "C:\\myne\\code\\dotnet\\v9\\CourtBooking\\CourtBooking.Server\\Models\\Reservation.cs",
+              "RelativeToolTip": "CourtBooking.Server\\Models\\Reservation.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-06T04:31:46.631Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Calendar.jsx",
+              "DocumentMoniker": "C:\\myne\\code\\dotnet\\v9\\CourtBooking\\courtbooking.client\\src\\Calendar.jsx",
+              "RelativeDocumentMoniker": "courtbooking.client\\src\\Calendar.jsx",
+              "ToolTip": "C:\\myne\\code\\dotnet\\v9\\CourtBooking\\courtbooking.client\\src\\Calendar.jsx",
+              "RelativeToolTip": "courtbooking.client\\src\\Calendar.jsx",
+              "ViewState": "AgIAAJcAAAAAAAAAAADwv7AAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-11-05T21:30:48.752Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "App.jsx",
+              "DocumentMoniker": "C:\\myne\\code\\dotnet\\v9\\CourtBooking\\courtbooking.client\\src\\App.jsx",
+              "RelativeDocumentMoniker": "courtbooking.client\\src\\App.jsx",
+              "ToolTip": "C:\\myne\\code\\dotnet\\v9\\CourtBooking\\courtbooking.client\\src\\App.jsx",
+              "RelativeToolTip": "courtbooking.client\\src\\App.jsx",
+              "ViewState": "AgIAAC4AAAAAAAAAAAAAADkAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-11-05T21:20:53.826Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Login.jsx",
+              "DocumentMoniker": "C:\\myne\\code\\dotnet\\v9\\CourtBooking\\courtbooking.client\\src\\Login.jsx",
+              "RelativeDocumentMoniker": "courtbooking.client\\src\\Login.jsx",
+              "ToolTip": "C:\\myne\\code\\dotnet\\v9\\CourtBooking\\courtbooking.client\\src\\Login.jsx",
+              "RelativeToolTip": "courtbooking.client\\src\\Login.jsx",
+              "ViewState": "AgIAAIYAAAAAAAAAAAAAAJsAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-11-05T21:20:42.834Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "AuthEndpoints.cs",
+              "DocumentMoniker": "C:\\myne\\code\\dotnet\\v9\\CourtBooking\\CourtBooking.Server\\Controllers\\AuthEndpoints.cs",
+              "RelativeDocumentMoniker": "CourtBooking.Server\\Controllers\\AuthEndpoints.cs",
+              "ToolTip": "C:\\myne\\code\\dotnet\\v9\\CourtBooking\\CourtBooking.Server\\Controllers\\AuthEndpoints.cs",
+              "RelativeToolTip": "CourtBooking.Server\\Controllers\\AuthEndpoints.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAQwBgAAAA8AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-05T21:13:00.288Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
