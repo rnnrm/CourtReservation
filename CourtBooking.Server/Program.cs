@@ -78,11 +78,22 @@ builder.Services.ConfigureApplicationCookie(options =>
     };
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowVercel", policy =>
+    {
+        policy.WithOrigins("https://your-vercel-app.vercel.app") // <-- replace with your Vercel URL
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
 var app = builder.Build();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
-
+// Add before app.UseAuthentication(); and after app.UseStaticFiles();
+app.UseCors("AllowVercel");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

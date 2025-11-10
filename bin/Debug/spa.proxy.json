@@ -3,7 +3,7 @@
 "ServerUrl": "https://localhost:52293",
 "RedirectUrl": "",
 "LaunchCommand": "npm run dev",
-"WorkingDirectory": "C:\\myne\\code\\dotnet\\v9\\CourtBooking\\CourtBooking.Server\\..\\courtbooking.client",
+"WorkingDirectory": "C:\\myne\\code\\dotnet\\v9\\CourtBooking\\CourtBooking.Server\\..\\courtbooking-client",
 "MaxTimeoutInSeconds": "120",
 "KeepRunning": "false"
 }

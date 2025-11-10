@@ -20,7 +20,7 @@ FROM with-node AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["CourtBooking.Server/CourtBooking.Server.csproj", "CourtBooking.Server/"]
-COPY ["courtbooking.client/courtbooking.client.esproj", "courtbooking.client/"]
+COPY ["courtbooking-client/courtbooking.client.esproj", "courtbooking-client/"]
 RUN dotnet restore "./CourtBooking.Server/CourtBooking.Server.csproj"
 COPY . .
 WORKDIR "/src/CourtBooking.Server"

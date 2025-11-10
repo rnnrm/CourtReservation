@@ -1,5 +1,6 @@
 # Visual Studio / IDE
 .vs/
+.vs/*
 .vscode/
 .idea/
 *.suo
@@ -48,8 +49,8 @@ npm-debug.log*
 yarn-error.log
 yarn-debug.log*
 pnpm-lock.yaml
-courtbooking.client/build
-courtbooking.client/dist
+courtbooking-client/build
+courtbooking-client/dist
 
 # Docker
 **/docker-compose.override.yml

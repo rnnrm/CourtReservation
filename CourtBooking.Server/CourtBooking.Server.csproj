@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>cae57f7d-56e3-4eaf-8cd2-31ba9bd6ce36</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <SpaRoot>..\courtbooking.client</SpaRoot>
+    <SpaRoot>..\courtbooking-client</SpaRoot>
     <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
     <SpaProxyServerUrl>https://localhost:52293</SpaProxyServerUrl>
     <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <!--<ItemGroup>
-    <ProjectReference Include="..\courtbooking.client\courtbooking.client.esproj">
+    <ProjectReference Include="..\courtbooking-client\courtbooking-client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>-->

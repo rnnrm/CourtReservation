@@ -3,14 +3,14 @@
     "Name": "New Profile",
     "Projects": [
       {
-        "Path": "courtbooking.client\\courtbooking.client.esproj",
-        "Action": "Start",
-        "DebugTarget": "localhost (Edge)"
-      },
-      {
         "Path": "docker-compose.dcproj",
         "Action": "Start",
         "DebugTarget": "Docker Compose"
+      },
+      {
+        "Path": "courtbooking-client\\courtbooking-client.esproj",
+        "Action": "Start",
+        "DebugTarget": "localhost (Edge)"
       }
     ]
   }

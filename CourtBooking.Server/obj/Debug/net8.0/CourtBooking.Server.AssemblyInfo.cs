@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CourtBooking.Server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fcefceac4f7c39eef4e645ab05fbc36c082480d9")]
 [assembly: System.Reflection.AssemblyProductAttribute("CourtBooking.Server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CourtBooking.Server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
