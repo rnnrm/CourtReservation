@@ -81,3 +81,7 @@ Thumbs.db
 # Coverage / test
 coverage/
 coverage-final.json
+
+bin/
+CourtBooking.Server/obj/
+CourtBooking.Server/bin/
