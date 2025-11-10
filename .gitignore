@@ -1,0 +1,82 @@
+# Visual Studio / IDE
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.dbmdl
+
+# Build outputs
+bin/
+obj/
+artifacts/
+publish/
+dist/
+build/
+TestResults/
+
+# .NET
+*.nupkg
+*.snupkg
+.nuget/
+project.lock.json
+*.dotCover
+*.coverage
+
+# Runtime / databases
+app.db
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+
+# Logs
+*.log
+
+# Secrets / env
+secrets.json
+*.secrets.json
+.env
+.env.local
+.env.*.local
+local.settings.json
+
+# Node / frontend
+node_modules/
+npm-debug.log*
+yarn-error.log
+yarn-debug.log*
+pnpm-lock.yaml
+courtbooking.client/build
+courtbooking.client/dist
+
+# Docker
+**/docker-compose.override.yml
+**/docker-compose.*.yml
+.vscode/.docker/
+
+# GitHub Copilot / workspace artifacts
+.copilot/
+.copilot_workspace
+.copilot-chat/
+.copilot-cache/
+.copilot-replies/
+.copilot-settings.json
+copilot.*
+*.copilot
+.vscode/.copilot/
+.vscode/copilot.*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Certificates / keys
+*.pfx
+*.key
+*.pem
+
+# Coverage / test
+coverage/
+coverage-final.json
