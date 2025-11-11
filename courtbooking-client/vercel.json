@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://waddleware.duckdns.org:8080/api/:path*"
+      "destination": "https://waddleware.duckdns.org:8081/api/:path*"
     }
   ]
 }
