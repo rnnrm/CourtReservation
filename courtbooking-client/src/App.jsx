@@ -75,7 +75,7 @@ function App() {
                         <Login user={user} setUser={setUser} />
                     </Row>
                 </Container>
-                <p>If you are a member, let a club administrator know your registered email so that they can activate your account.</p>
+                <p>If you are a member, let a club administrator know your display name after you register so that they can activate your account.</p>
 
             </div >
         </>

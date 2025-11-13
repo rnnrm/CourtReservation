@@ -82,7 +82,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowVercel", policy =>
     {
-        policy.WithOrigins("https://your-vercel-app.vercel.app") // <-- replace with your Vercel URL
+        policy.WithOrigins("https://kenrho.vercel.app") // <-- replace with your Vercel URL
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
