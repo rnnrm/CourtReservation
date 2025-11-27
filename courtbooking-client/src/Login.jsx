@@ -2,6 +2,7 @@ import { useEffect, useState, useActionState } from 'react';
 import Form from 'react-bootstrap/Form';
 //import Form.label from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import { post } from './Utility.js';
 
 /**
  * ReactComponent
@@ -17,10 +18,9 @@ const Login = ({ user, setUser }) => {
 
     useEffect(() => {
         const checkLogin = async () => {
-            let response = await fetch('api/auth/check', { method: 'POST', credentials: 'include' });
+            let response = await post('api/auth/check', null, null, "GET");
             if (response.ok) {
                 response.json().then(data => {
-                    console.log("user data: ", JSON.stringify(data));
                     setUser(data);
                 });
             }
@@ -28,68 +28,37 @@ const Login = ({ user, setUser }) => {
         checkLogin();
     }, [setUser]);
 
-        const getUsers = async () => {
-            let response = await fetch('api/Users',
-                {
-                    method: 'GET',
-                    credentials: 'include',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    }
-                });
-            if (response.ok) {
-                var _users = await response.json();
-                setUsers(_users);
-            }
+    const getUsers = async () => {
+        let response = await post('api/Users', null, null, "GET");
+        if (response.ok) 
+            setUsers(await response.json());
+        else
+            setUsers(null);
     }
 
     useEffect(() => {
-        getUsers();
+        if (user?.role === "Admin")
+            getUsers();
     }, [user]);
 
     const deleteUser = async (email) => {
         let result = await post('api/Users', email, null, "DELETE");
-        if (result.ok) getUsers();
+        if (result.ok)
+            getUsers();
     }
 
     const updateMembership = async (email, role) => {
         await post('api/Users/toggleRole', { email: email, role: role }, null, "PATCH");
     }
 
-    const post = async (url, obj, errorResponses, method = "POST") => {
-        let response = await fetch(url, {
-            method: method,
-            credentials: 'include',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            ...(method !== "GET" && { body: JSON.stringify(obj) })
-        });
-
-        //setLoginErrorText('');
-        //console.log(response);
-        if (!response.ok) {
-            if (errorResponses && response) {
-                console.log(response);
-                response = await response.json();
-                setLoginErrorText(errorResponses(response));
-            }
-        }
-        else {
-            setLoginErrorText('Success');
-        }
-
-        return response;
-    }
-
     const logout = async () => {
         await post('api/auth/logout', null, null, "GET");
+        setUser(null);
+        setLoginErrorText('Logged out.');
     };
 
     const register = async (formData) => {
-        await post('api/auth/register', {
+        var response = await post('api/auth/register', {
             Email: formData.get('email'),
             Name: formData.get('name'),
             Password: formData.get('password')
@@ -97,13 +66,15 @@ const Login = ({ user, setUser }) => {
             (response) => {
                 switch (response.status) {
                     case 401:
-                        return 'Already registered';
-                    default: {
-                        return response;
-                    }
+                        setLoginErrorText('Email already registered, choose another.');
+                        break;
+                    default:
+                        setLoginErrorText(response);
                 }
             }
         );
+        if (response.ok) 
+            setLoginErrorText('Registered successfully. Please log in.');
     }
 
     async function handleLogin(prevState, formData) {
@@ -116,16 +87,18 @@ const Login = ({ user, setUser }) => {
             (response) => {
                 switch (response.status) {
                     case 401:
-                        return 'Invalid username or password';
-                    default: {
-                        return response;
-                    }
+                        setLoginErrorText('Invalid username or password');
+                        break;
+                    default: 
+                        setLoginErrorText(response);
+                    
                 }
             }
         );
         if (response.ok) {
             response = await response.json();
             setUser(response)
+            setLoginErrorText('Logged in');
         }
     }
 
@@ -133,35 +106,37 @@ const Login = ({ user, setUser }) => {
         <>
             <h2>Login</h2>
             <Form action={action} style={{ marginBottom: '1rem' }} >
-                <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'auto'
-                }} >
-                    <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label>
-                            <Form.Control name='email' autoComplete='Email' type="email" placeholder="Email" />
-                        </Form.Label>
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="formBasicName">
-                        <Form.Label>
-                            <Form.Control name='name' autoComplete='Name' type="text" placeholder="Name" />
-                        </Form.Label>
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="formBasicPassword">
-                        <Form.Label>
-                            <Form.Control name='password' autoComplete="current-password" type="password" placeholder="Password" />
-                        </Form.Label>
-                    </Form.Group>
-
-                </div>
-                <button variant="secondary" type="submit" id="login" disabled={isPending}>Login</button>
-                <button variant="secondary" type="submit" id="reg" disabled={isPending} formAction={register}>Register</button>
-                <button variant="secondary" type="button" id="logout" onClick={logout}>Logout</button>
+                {user === null ? (
+                    <>
+                    <div style={{ display: 'grid',gridTemplateColumns: 'auto' }} >
+                        <Form.Group className="mb-3" controlId="formBasicEmail">
+                            <Form.Label>
+                                <Form.Control name='email' autoComplete='Email' type="email" placeholder="Email" />
+                            </Form.Label>
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="formBasicName">
+                            <Form.Label>
+                                <Form.Control name='name' autoComplete='Name' type="text" placeholder="Name" />
+                            </Form.Label>
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="formBasicPassword">
+                            <Form.Label>
+                                <Form.Control name='password' autoComplete="current-password" type="password" placeholder="Password" />
+                            </Form.Label>
+                        </Form.Group>
+                    </div>
+                    <button variant="secondary" type="submit" id="login" disabled={isPending}>Login</button>
+                    <button variant="secondary" type="submit" id="reg" disabled={isPending} formAction={register}>Register</button>
+                    </>)
+                :
+                    <button variant="secondary" type="button" id="logout" onClick={logout}>Logout</button>
+                }
                 {loginErrorText && <div style={{ color: 'red' }}>{loginErrorText}</div>}
                 <div>{state}</div>
+                <p>If you are a member, let a club administrator know your display name after you register so that they can activate your account.</p>
             </Form>
-            {users &&
-                <div style={{ height: "200px", overflowY: "scroll" }}>
+            {users && user &&
+                <div style={{ height: "400px", overflowY: "scroll" }}>
                     <table className="table table-striped" align="center">
                         <thead>
                             <tr><th>Username</th>

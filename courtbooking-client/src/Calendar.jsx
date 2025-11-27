@@ -5,31 +5,12 @@ import dayGridPlugin from '@fullcalendar/daygrid' // a plugin!
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from "@fullcalendar/interaction" // needed for dayClick
 import { useEffect, useState } from 'react'
+import { post } from './Utility.js';
 export default function Calendar({ user, court }) {
 
-    const handleDateClick = (arg) => {
-        alert(JSON.stringify(arg))
-    }
-
-    const post = async (url, obj, errorResponses, method = "POST") => {
-
-        let response = await fetch(url, {
-            method: method,
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            ...(method !== "GET" && { body: JSON.stringify(obj) })
-        });
-
-        if (!response.ok) {
-            if (errorResponses && response) {
-                //response = await response.json();
-                console.log('error: ' + errorResponses(response));
-            }
-        }
-
-        return response;
+    function isGuestReservation(res) {
+        const guestColour = "hsl(60, 50%, 50%)";
+        return res.backgroundColor === guestColour;
     }
 
     const updateData = (data, action) => {
@@ -71,6 +52,7 @@ export default function Calendar({ user, court }) {
             return (
                 selectInfo.start < event.end && selectInfo.end > event.start
                 && Number(event.extendedProps?.court) === Number(court)
+                && !isGuestReservation(event)
             );
         })) { 
             alert("Time slot already taken for court "+court);
@@ -90,7 +72,7 @@ export default function Calendar({ user, court }) {
                 allDay: selectInfo.allDay,
                 extendedProps: { court: court, owner: user.email, description: "" },
                 backgroundColor: colour
-            })
+            }, 'backendServerEventSourceId')
         }
     }
 
@@ -106,19 +88,22 @@ export default function Calendar({ user, court }) {
             user.role !== "Admin") return false; // only allow owner to modify booking)
         return true;
     }
-    
+
     function handleEventClick(eventInfo) {
-        /*{ eventInfo.event.title } <b>{eventInfo.timeStr}</b>  eventInfo.event.description*/
-        //console.log('eventInfo', JSON.stringify(eventInfo))
-        //let cal = eventInfo.view.calendar.getEvents();
-        if (!user || (eventInfo.event.extendedProps.owner !== user?.email
-            && user?.role!=="Admin")) //return; // only allow owner to modify booking
-            alert(`Booking by ${eventInfo.event.title} \nFrom \n${eventInfo.event.start} \nto \n${eventInfo.event.end} \n${eventInfo.event.extendedProps.description??''}`);
-        else
-            if (confirm(`Are you sure you want to delete the event \n${eventInfo.event.title} From \n${eventInfo.event.start} \nto \n${eventInfo.event.end} \n${eventInfo.event.extendedProps.description??''}`)) {
+        if (isGuestReservation(eventInfo.event) && user?.role !== "Guest")
+            return handleDateSelect(eventInfo);
+
+        // only allow owner or admin to delete booking or if its a guest reservation
+        if (user && (eventInfo.event.extendedProps.owner === user?.email
+            || user?.role === "Admin"
+            //|| isGuestReservation(eventInfo.event)  && user?.role !== "Guest")
+        )) {
+            if (confirm(`Are you sure you want to delete the event \n${eventInfo.event.title} From \n${eventInfo.event.startStr} \nto \n${eventInfo.event.endStr} \n${eventInfo.event.extendedProps.description ?? ''}`)) {
                 eventInfo.event.remove()
             }
-
+        }
+        else
+            alert(`Booking by ${eventInfo.event.title} \nFrom \n${eventInfo.event.startStr} \nto \n${eventInfo.event.endStr} \n${eventInfo.event.extendedProps.description??''}`);
     }
     function renderEventContent(eventInfo,timeText) {
         console.log(JSON.stringify(eventInfo))
@@ -131,7 +116,8 @@ export default function Calendar({ user, court }) {
 
     function detectConflicts(stillEvent, movingEvent) {
         console.log('overlap intercept');
-        if (stillEvent.extendedProps.court === movingEvent.extendedProps.court) {
+         
+        if ((stillEvent.extendedProps.court === movingEvent.extendedProps.court) && !isGuestReservation(stillEvent)) {
             return false;
         }
         return true;
@@ -143,6 +129,7 @@ export default function Calendar({ user, court }) {
             initialView="timeGridWeek"
             //events={events}
             events={{
+                id: 'backendServerEventSourceId',
                 url: 'api/Bookings',
                 extraParams: {
                     court: court
@@ -164,7 +151,7 @@ export default function Calendar({ user, court }) {
             //eventContent={renderEventContent} // custom render function
             eventClick={handleEventClick}
             eventAllow={handleEventAllow}
-            //eventOverlap={detectConflicts}
+            eventOverlap={false}// {detectConflicts}
             //eventsSet={handleEvents} // called after events are initialized/added/changed/removed
             // you can update a remote database when these fire:
             eventAdd={v => updateData(v, '+')}

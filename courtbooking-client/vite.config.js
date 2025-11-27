@@ -64,10 +64,6 @@ export default defineConfig(({ command }) => {
         // only Vite dev server needs server settings
         server: isServe ? {
             proxy: {
-                '^/weatherforecast': {
-                    target,
-                    secure: false
-                },
                 '/api': {
                     target,
                     secure: false

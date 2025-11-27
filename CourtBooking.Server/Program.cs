@@ -14,6 +14,11 @@ using System.Data;
 using LoginRequest = CourtBooking.Server.Models.LoginRequest;
 using RegisterRequest = CourtBooking.Server.Models.RegisterRequest;
 
+//TODO migrate databse updates
+//merge deploy withouy overwriting database
+//google,facebook logins
+//ladder list, update scores
+// check 500 errors, offline notification
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -36,11 +41,11 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddAuthorization();
 builder.Services.AddIdentity<AppUser, IdentityRole>(cfg =>
 {
-    cfg.Password.RequireDigit = true;
+    cfg.Password.RequireDigit = false;
     cfg.Password.RequiredLength = 6;
     cfg.Password.RequireNonAlphanumeric = false;
     cfg.Password.RequireUppercase = false;
-    cfg.Password.RequireLowercase = true;
+    cfg.Password.RequireLowercase = false;
     cfg.User.RequireUniqueEmail = true;
 })
 //builder.Services.AddIdentityApiEndpoints<IdentityUser>()
@@ -108,94 +113,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseDeveloperExceptionPage();
 
-
-
-//app.MapPost("/api/auth/logout", async (SignInManager<AppUser> signInManager,
-//    [FromBody] object empty) =>
-//{
-//    if (empty != null)
-//    {
-//        await signInManager.SignOutAsync();
-//        return Results.Ok();
-//    }
-//    return Results.Unauthorized();
-//})
-////.WithOpenApi()
-//.RequireAuthorization();
-
-//app.MapPost("/api/auth/register", async (
-//    RegisterRequest request,
-//    UserManager<AppUser> userManager,
-//    RoleManager<IdentityRole> roleManager,
-//    SignInManager<AppUser> signInManager) =>
-//{
-//    var user = new AppUser { UserName = request.Name, Email = request.Email };
-//    var result = await userManager.CreateAsync(user, request.Password!);
-
-//    if (!result.Succeeded)
-//    {
-//        System.Text.StringBuilder err = new System.Text.StringBuilder();
-//        foreach (var error in result.Errors)
-//        {
-//            err.Append(error.Description);
-//        }
-//        return Results.BadRequest( err.ToString());
-//    }
-//    await userManager.AddToRoleAsync(user, "Guest");
-//    await signInManager.SignInAsync(user, isPersistent: false);
-//    return Results.Ok();
-//});
-
-//app.MapPost("/api/auth/login", async (
-//    LoginRequest request,
-//    UserManager<AppUser> userManager,
-//    RoleManager<IdentityRole> roleManager,
-//    SignInManager<AppUser> signInManager) =>
-//{
-//    //var user = new AppUser { UserName = request.Email, Email = request.Email };
-
-//    var user = await userManager.FindByEmailAsync(request.Email);
-//    if (user == null)
-//        //return Results.ValidationProblem(new Dictionary<string, string[]>
-//        //{
-//        //    ["User not found"] = new[] { "User not found" }
-//        //});
-//        return Results.NotFound("User not found");
-
-//    //if (!user.EmailConfirmed)
-//    //{
-//    //    return Results.BadRequest("Email not confirmed yet");
-
-//    //}
-//    if (await userManager.CheckPasswordAsync(user, request.Password) == false)
-//    {
-//        return Results.NotFound("Invalid credentials.");
-//        //return Results.ValidationProblem(new Dictionary<string, string[]>
-//        //{
-//        //    ["Credentials"] = new[] { "Invalid credentials." }
-//        //});
-//    }
-
-//     await signInManager.SignInAsync(user, isPersistent: true);
-//    //var result = await signInManager.PasswordSignInAsync(user, request.Password, isPersistent: true, lockoutOnFailure:false);
-
-//    //if (!result.Succeeded)
-//    //{
-//    //    Console.WriteLine("ERROR HAPPEN: "+result);
-//    //    return Results.BadRequest(result.ToString());
-//    //}
-//    //else if (result.IsLockedOut)
-//    //{
-//    //    return Results.BadRequest("AccountLocked");
-//    //}
-//    //else
-//    //{
-//    //    return Results.BadRequest("Invalid login attempt");
-//    //}
-
-//    return Results.Ok();
-//});
-
 //app.MapGroup("/api/auth").MapIdentityApi<AppUser>();
 app.MapAuthEndpoints();
 app.MapControllers();
@@ -225,7 +142,8 @@ using (var scope = app.Services.CreateScope())
         var user = new AppUser
         {
             UserName = "ClubAdmin",
-            Email = "aa@aa.aa"
+            Email = "aa@aa.aa",
+            Rank=999
         };
         await userManager.CreateAsync(user, "p@staW0rd!");
         await userManager.AddToRoleAsync(user, "Admin");

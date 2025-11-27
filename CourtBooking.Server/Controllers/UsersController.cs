@@ -10,7 +10,7 @@ using static CourtBooking.Server.Controllers.BookingsController;
 
 namespace CourtBooking.Server.Controllers
 {
-    public record UserRolesViewModel(string Name, string Email, string[] Roles);
+    public record UserRolesViewModel(string Name, string Email, string[] Roles, int rank);
 
     [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
@@ -26,7 +26,9 @@ namespace CourtBooking.Server.Controllers
             _roleManager = roleManager;
         }
 
+        //get all users
         // GET: api/<Users>
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<Dictionary<string, UserRolesViewModel>>> Get()
         {
@@ -39,7 +41,8 @@ namespace CourtBooking.Server.Controllers
                 list.Add(new UserRolesViewModel(
                     u.UserName ?? string.Empty,
                     u.Email ?? string.Empty,
-                    roles?.ToArray() ?? Array.Empty<string>()
+                    roles?.ToArray() ?? Array.Empty<string>(),
+                    u.Rank
                 ));
             }
 
@@ -86,7 +89,7 @@ namespace CourtBooking.Server.Controllers
 
         // PUT api/<Users>/role
         [HttpPatch("toggleRole")]
-        public async Task<IActionResult> Patch( [FromBody] RoleParameters p )
+        public async Task<IActionResult> Patch([FromServices] RoleManager<IdentityRole> roleManager,[FromServices] ApplicationDbContext db, [FromBody] RoleParameters p )
         {
             var currentUser = await _userManager.FindByEmailAsync(p.Email);
             if (currentUser == null) return NotFound();
@@ -95,11 +98,38 @@ namespace CourtBooking.Server.Controllers
             if (await _userManager.IsInRoleAsync(currentUser!, p.Role))
             {
                 roleresult = await _userManager.RemoveFromRoleAsync(currentUser!, p.Role);
-
+                if (p.Role == "Member") {
+                    //currentUser.Rank = 9999;
+                    await _userManager.UpdateAsync(currentUser);
+                }
             }
             else {
                 roleresult = await _userManager.AddToRoleAsync(currentUser!, p.Role);
+                if (p.Role == "Member") {
+                    // Find the RoleId for "Member"
+                    var memberRole = await roleManager.FindByNameAsync("Member");
+                    if (memberRole != null)
+                    {
+                        // Query AspNetUserRoles for user ids that have the Member role
+                        var memberUserIds = db.Set<IdentityUserRole<string>>()
+                                              .Where(ur => ur.RoleId == memberRole.Id)
+                                              .Select(ur => ur.UserId);
+
+                        // Compute max rank among those users (exclude nulls)
+                        var maxRank = await db.Users
+                                              .Where(u => memberUserIds.Contains(u.Id))
+                                              .MaxAsync(u => (int?)u.Rank) ?? 0;
+
+                        currentUser.Rank = maxRank + 1;
+                    }
+                    else
+                    {
+                        currentUser.Rank = 1;
+                    }
+                    await _userManager.UpdateAsync(currentUser);
+                }
             }
+            await db.SaveChangesAsync();
 
             return roleresult.Succeeded ? Ok() : Problem(roleresult.Errors.ToString());
         }

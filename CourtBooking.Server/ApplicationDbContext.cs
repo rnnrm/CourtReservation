@@ -25,7 +25,6 @@ namespace CourtBooking.Server
                 });
         }
         
-        public DbSet<Court> Courts { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
     }
 }

@@ -1,19 +1,33 @@
-import { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import Login from './Login.jsx';
-import Calendar from './Calendar.jsx';
 import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Tab from 'react-bootstrap/Tab';
-import Tabs from 'react-bootstrap/Tabs';
-import Badge from 'react-bootstrap/Badge';
-import Stack from 'react-bootstrap/Stack';
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import NavDropdown from 'react-bootstrap/NavDropdown';
+import Offcanvas from 'react-bootstrap/Offcanvas';
+import Alert from 'react-bootstrap/Alert';
+import { Link } from 'react-router-dom';
+import { Outlet } from "react-router";
+import { useEffect, useState } from 'react';
 
 function App() {
-    const [user, setUser] = useState(null);
-    const [key, setKey] = useState(1);
+    const [offline, setOffline] = useState(false);
+    let expand = 'md';
+
+    useEffect(() => {
+        const checkOffline = async () => {
+            try {
+                let response = await fetch('api/check', { signal: AbortSignal.timeout(15000) });
+                if (response.ok || response.status === "401")
+                    setOffline(false);
+            } catch (error) {
+                if (error.name === "TimeoutError") {
+                    setOffline(true);
+                }
+            }
+        }
+        checkOffline();
+    }, []);
 
     return (
         <>
@@ -23,61 +37,72 @@ function App() {
                 integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
                 crossOrigin="anonymous"
             />*/}
-            <div>
-                <h1>KenRho Court reservation</h1>
 
-                <Container>
-                    <Row>
-                        <Col xs lg={12}></Col>
+            <Navbar collapseOnSelect fixed="top" expand={'md'} className="bg-body-tertiary mb-3">
+                <Container fluid>
+                    <Navbar.Brand as={Link} to="/">KenRho {offline ? "OFFLINE" : ""}</Navbar.Brand>
+                    <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${expand}`} />
+                    <Navbar.Collapse 
+                        
+                        id={`offcanvasNavbar-expand-${expand}`}
+                        aria-labelledby={`offcanvasNavbarLabel-expand-${expand}`}
+                        placement="end"
+                    >
+                        {/*<Offcanvas.Header closeButton>*/}
+                        {/*    */}{/*<Offcanvas.Title id={`offcanvasNavbarLabel-expand-${expand}`}>*/}
+                        {/*    */}{/*    Offcanvas*/}
+                        {/*    */}{/*</Offcanvas.Title>*/}
+                        {/*</Offcanvas.Header>*/}
+                        {/*<Offcanvas.Body>*/}
+                            <Nav variant="underline" defaultActiveKey="/" className="justify-content-end flex-grow-1 pe-3">
+                                <Nav.Link eventKey="/" as={Link} to="/">Account</Nav.Link>
+                            <Nav.Link eventKey="/reservations" as={Link} to="/reservations">Book court</Nav.Link>
 
-                        <Tabs
-                            defaultActiveKey="1"
-                            id="uncontrolled-tab-example"
-                            className="mb-3"
-                            activeKey={key}
-                            onSelect={(k) => setKey(k)}
-                        >
-                            <Tab eventKey={1} title="Court 1">
-                                <h2>Lower left court</h2>
-                                <Calendar key={1} user={user} court={1} />
-                            </Tab>
-                            <Tab eventKey={2} title="Court 2">
-                                <h2>Lower right court</h2>
-                                <Calendar key={2} user={user} court={2} />
-                            </Tab>
-                            <Tab eventKey={3} title="Court 3">
-                                <h2>Middle left court</h2>
-                                <Calendar key={3} user={user} court={3} />
-                            </Tab>
-                            <Tab eventKey={4} title="Court 4">
-                                <h2>Middle right court</h2>
-                                <Calendar key={4} user={user} court={4} />
-                            </Tab>
-                            <Tab eventKey={5} title="Court 5">
-                                <h2>Upper left court</h2>
-                                <Calendar key={5} user={user} court={5} />
-                            </Tab>
-                            <Tab eventKey={6} title="Court 6">
-                                <h2>Upper right court</h2>
-                                <Calendar key={6} user={user} court={6} />
-                            </Tab>
-                        </Tabs>
-                        <Stack direction="horizontal" gap={2} className="me-auto">
-                            <Badge bg="info" className="ms-auto">Member</Badge>
-                            <Badge bg="danger">Admin</Badge>
-                            <Badge bg="warning" text="dark" className="me-auto">
-                                Guest
-                            </Badge>
-                        </Stack>
-                        <p>Long press a time slot to create/move/resize a reservation</p>
-                    </Row>
-                    <Row>
-                        <Login user={user} setUser={setUser} />
-                    </Row>
+                            <Nav.Link eventKey="/ladder" as={Link} to="/ladder">Ladder</Nav.Link>
+                                {/*<NavDropdown*/}
+                                {/*    title="Ladder"*/}
+                                {/*    id={`offcanvasNavbarDropdown-expand-${expand}`}*/}
+                                {/*>*/}
+                                {/*    <NavDropdown.Item eventKey="/ladder" as={Link} to="/ladder/singles">Singles ladder</NavDropdown.Item>*/}
+                                {/*    <NavDropdown.Item as={Link} to="/ladder/doubles">*/}
+                                {/*        Doubles ladder*/}
+                                {/*    </NavDropdown.Item>*/}
+                                {/*    <NavDropdown.Divider />*/}
+                                {/*    <NavDropdown.Item href="#action5">*/}
+                                {/*        Tournament*/}
+                                {/*    </NavDropdown.Item>*/}
+                                {/*</NavDropdown>*/}
+                            </Nav>
+                            {/*<Form className="d-flex">*/}
+                            {/*    <Form.Control*/}
+                            {/*        type="search"*/}
+                            {/*        placeholder="Search"*/}
+                            {/*        className="me-2"*/}
+                            {/*        aria-label="Search"*/}
+                            {/*    />*/}
+                            {/*    <Button variant="outline-success">Search</Button>*/}
+                            {/*</Form>*/}
+                        {/*</Offcanvas.Body>*/}
+                    </Navbar.Collapse>
                 </Container>
-                <p>If you are a member, let a club administrator know your display name after you register so that they can activate your account.</p>
+            </Navbar>
 
-            </div >
+            <div className="mt-4">
+            <Outlet />
+                {(offline) ?
+                    <Alert variant="danger" onClose={() => { } } dismissible>
+                        {/*<Alert.Heading>Offline</Alert.Heading>*/}
+                        <p>
+                            {(!navigator.onLine) ?
+                                'You are currently offline. Please check your connection and refresh.'
+                            :
+                                'Server is offline.'
+                            }
+                        </p>
+                    </Alert>
+                : ""}
+
+            </div>
         </>
     );
 
