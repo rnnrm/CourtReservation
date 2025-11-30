@@ -4,17 +4,19 @@ using CourtBooking.Server.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-//TODO migrate databse updates (automatically on deploy? when not to)
-//merge deploy without overwriting database
-//unit tests
-//google,facebook logins
-//ladder list, update scores
-// check 500 errors,
-// offline notification \/
-//public github?
-//deploy docker image to registry run release mode
-// auto deploy CI github actions
-//env variables for connection strings, secrets, page config
+// TODO: migrate databse updates (automatically on deploy? when not to)
+// TODO: merge deploy without overwriting database
+// TODO: unit tests
+// TODO: google,facebook logins
+// TODO: ladder list, update scores
+// TODO: check 500 errors,
+// TODO: offline notification \/
+// TODO: public github?
+// TODO: deploy docker image to registry run release mode
+// TODO: auto deploy CI github actions
+// TODO: env variables for connection strings, secrets, page config
+// TODO: remove databse from version control \/
+// TODO: calendar width hidden burger menu week view
 
 var builder = WebApplication.CreateBuilder(args);
 
