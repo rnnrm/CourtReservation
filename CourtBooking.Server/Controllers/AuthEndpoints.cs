@@ -50,7 +50,7 @@ public static class AuthEndpoints
             await signInManager.SignInAsync(user, isPersistent: true);
             //var userRole = signInManager.Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
             var role = signInManager.Context.User.IsInRole("Admin") ? "Admin" : signInManager.Context.User.IsInRole("Member") ? "Member" : "Guest";
-            return Results.Ok(new { email = user.Email, name = user.UserName, role, user.Rank });
+            return Results.Ok(new { user.Id, name = user.UserName, role, user.Rank });
         });
 
         group.MapGet("/logout", [Authorize] async (SignInManager<AppUser> signInManager) =>
@@ -69,16 +69,16 @@ public static class AuthEndpoints
             if (isAuthenticated) {
                 var email = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
                 var appuser = await signInManager.UserManager.FindByEmailAsync(email);
-                return Results.Ok(new { name = user.Identity.Name, email, role, appuser?.Rank });
+                return Results.Ok(new { name = user.Identity.Name, appuser?.Id, role, appuser?.Rank });
             }
             else
                 return Results.Unauthorized();
         });
 
         //change password
-        group.MapPost("/reset", [Authorize("Admin")] async (UserManager<AppUser> userManager, string userEmail, string newPassword) =>
+        group.MapPost("/reset", [Authorize("Admin")] async (UserManager<AppUser> userManager, string Id, string newPassword) =>
         {
-            var user = await userManager.FindByEmailAsync(userEmail);
+            var user = await userManager.FindByIdAsync(Id);
             if (user == null)
                 return Results.NotFound();
             var resetToken = await userManager.GeneratePasswordResetTokenAsync(user);

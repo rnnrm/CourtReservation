@@ -26,5 +26,6 @@ namespace CourtBooking.Server
         }
         
         public DbSet<Reservation> Reservations { get; set; }
+        public DbSet<MatchResult> MatchResults { get; set; }
     }
 }

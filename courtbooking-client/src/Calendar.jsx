@@ -4,7 +4,6 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid' // a plugin!
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from "@fullcalendar/interaction" // needed for dayClick
-import { useEffect, useState } from 'react'
 import { post } from './Utility.js';
 export default function Calendar({ user, court }) {
 
@@ -15,7 +14,7 @@ export default function Calendar({ user, court }) {
 
     const updateData = (data, action) => {
 
-        if (data.event.extendedProps.owner !== user.email &&
+        if (data.event.extendedProps.owner !== user.Id &&
             user.role !== "Admin") return; // only allow owner to modify booking
 
         let booking = {
@@ -33,7 +32,7 @@ export default function Calendar({ user, court }) {
                 post('api/Bookings', booking, i => JSON.stringify(i), "POST");
                 break;
             case '-':
-                post('api/Bookings', { Id:booking.Id, Email:booking.ExtendedProps.owner }, i => JSON.stringify(i), "DELETE");
+                post('api/Bookings', { BookingId:booking.Id, UserId:booking.ExtendedProps.owner }, i => JSON.stringify(i), "DELETE");
                 break;
             case '=':
                 post('api/Bookings', booking, i => JSON.stringify(i), "PUT");
@@ -70,21 +69,21 @@ export default function Calendar({ user, court }) {
                 start: selectInfo.startStr,
                 end: selectInfo.endStr,
                 allDay: selectInfo.allDay,
-                extendedProps: { court: court, owner: user.email, description: "" },
+                extendedProps: { court: court, owner: user.Id, description: "" },
                 backgroundColor: colour
             }, 'backendServerEventSourceId')
         }
     }
 
     function handleAllowSelect(eventInfo) { 
-        console.log('handleAllowSelect',eventInfo.event.extendedProps.owner, user.email);
-        if (eventInfo.event.extendedProps.owner !== user.email &&
+        console.log('handleAllowSelect',eventInfo.event.extendedProps.owner, user.Id);
+        if (eventInfo.event.extendedProps.owner !== user.Id &&
             user.role !== "Admin") return false; // only allow owner to modify booking)
         return true;
     }
     function handleEventAllow(dropInfo, draggedEvent) {
         //console.log('handleEventAllow ', draggedEvent, dropInfo);
-        if (draggedEvent.extendedProps.owner !== user.email &&
+        if (draggedEvent.extendedProps.owner !== user.Id &&
             user.role !== "Admin") return false; // only allow owner to modify booking)
         return true;
     }
@@ -94,7 +93,7 @@ export default function Calendar({ user, court }) {
             return handleDateSelect(eventInfo);
 
         // only allow owner or admin to delete booking or if its a guest reservation
-        if (user && (eventInfo.event.extendedProps.owner === user?.email
+        if (user && (eventInfo.event.extendedProps.owner === user?.Id
             || user?.role === "Admin"
             //|| isGuestReservation(eventInfo.event)  && user?.role !== "Guest")
         )) {

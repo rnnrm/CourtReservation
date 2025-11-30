@@ -10,7 +10,7 @@ using static CourtBooking.Server.Controllers.BookingsController;
 
 namespace CourtBooking.Server.Controllers
 {
-    public record UserRolesViewModel(string Name, string Email, string[] Roles, int rank);
+    public record UserRolesViewModel(string Name, string Id, string[] Roles, int Rank);
 
     [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
@@ -40,13 +40,13 @@ namespace CourtBooking.Server.Controllers
                 var roles = await _userManager.GetRolesAsync(u);
                 list.Add(new UserRolesViewModel(
                     u.UserName ?? string.Empty,
-                    u.Email ?? string.Empty,
+                    u.Id ?? string.Empty,
                     roles?.ToArray() ?? Array.Empty<string>(),
                     u.Rank
                 ));
             }
 
-            var dict = list.ToDictionary(x => x.Email, x => x);
+            var dict = list.ToDictionary(x => x.Id, x => x);
 
             // Safe logging (avoid indexing into empty arrays)
             foreach (var kv in dict)
@@ -58,32 +58,9 @@ namespace CourtBooking.Server.Controllers
             return Ok(dict);
         }
 
-        // GET api/<Users>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-
-            return "value";
-        }
-
-        //// POST api/<Users>
-        //[AllowAnonymous]
-        //[HttpGet]
-        //public bool GetRole()
-        //{
-        //    return HttpContext.User.IsInRole("Admin");
-        //    //if ((bool)(HttpContext.User.Identity?.IsAuthenticated))
-        //}
-
-        // POST api/<Users>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
         public class RoleParameters
         {
-            public required string Email { get; set; }
+            public required string Id { get; set; }
             public required string Role { get; set; }
         }
 
@@ -91,7 +68,7 @@ namespace CourtBooking.Server.Controllers
         [HttpPatch("toggleRole")]
         public async Task<IActionResult> Patch([FromServices] RoleManager<IdentityRole> roleManager,[FromServices] ApplicationDbContext db, [FromBody] RoleParameters p )
         {
-            var currentUser = await _userManager.FindByEmailAsync(p.Email);
+            var currentUser = await _userManager.FindByIdAsync(p.Id);
             if (currentUser == null) return NotFound();
 
             IdentityResult roleresult;
@@ -136,13 +113,13 @@ namespace CourtBooking.Server.Controllers
 
         // DELETE api/<Users>
         [HttpDelete]
-        public async Task<IActionResult> Delete([FromServices] ApplicationDbContext db, [FromBody] string email)
+        public async Task<IActionResult> Delete([FromServices] ApplicationDbContext db, [FromBody] string Id)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByIdAsync(Id);
             if (user != null)
             {
                 //delete users reservaions
-                db.RemoveRange( db.Reservations.Where(r => r.ExtendedProps.Owner == user.Email) );
+                db.RemoveRange( db.Reservations.Where(r => r.ExtendedProps.Owner == user.Id) );
 
                 //delete user
                 var result = await _userManager.DeleteAsync(user);

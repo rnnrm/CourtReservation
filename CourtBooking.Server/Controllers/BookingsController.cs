@@ -1,5 +1,6 @@
 ﻿using CourtBooking.Server.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -89,11 +90,13 @@ namespace CourtBooking.Server.Controllers
 
         // PUT api/<Bookings>/5
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody] Reservation reservation)
+        public async Task<IActionResult> Put([FromServices] SignInManager<AppUser> signInManager,[FromBody] Reservation reservation)
         {
             if (reservation == null) return BadRequest();
 
-            if (!User.HasClaim(ClaimTypes.Email, reservation.ExtendedProps.Owner) && !User.IsInRole("Admin"))
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            var user = await signInManager.UserManager.FindByEmailAsync(userEmail);
+            if ( user?.Id != reservation.ExtendedProps.Owner && !User.IsInRole("Admin")) //!User.HasClaim(ClaimTypes.Email, reservation.ExtendedProps.Owner) &&
                 return Unauthorized();
 
             var existing = await _db.Reservations.FindAsync(reservation.Id);
@@ -116,21 +119,24 @@ namespace CourtBooking.Server.Controllers
             return NoContent();
         }
 
-        public record DeleteBookingDto(string Id, string Email);
+        public record DeleteBookingDto(string BookingId, string UserId);
 
         [Authorize]
         // DELETE api/<Bookings>
         [HttpDelete]
-        public async Task<IActionResult> Delete(//[FromServices] SignInManager<AppUser> signInManager,
+        public async Task<IActionResult> Delete([FromServices] SignInManager<AppUser> signInManager,
             [FromBody] DeleteBookingDto deleteBookingDto)
         {
             Console.WriteLine("User.Claims: "+string.Concat(User.Claims));
-            //User.Identity?.Name.ToString();signInManager.Context.
+
             //user must own reservation or be admin
-            if (!User.HasClaim(ClaimTypes.Email, deleteBookingDto.Email) && !User.IsInRole("Admin"))
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            var user = await signInManager.UserManager.FindByEmailAsync(userEmail);
+
+            if (user?.Id != deleteBookingDto.UserId && !User.IsInRole("Admin")) //!User.HasClaim(ClaimTypes.Email, deleteBookingDto.Email) 
                 return Unauthorized();
 
-            var existing = await _db.Reservations.FindAsync(deleteBookingDto.Id);
+            var existing = await _db.Reservations.FindAsync(deleteBookingDto.BookingId);
             if (existing == null) return NotFound();
 
             _db.Reservations.Remove(existing);

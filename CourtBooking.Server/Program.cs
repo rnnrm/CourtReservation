@@ -1,24 +1,21 @@
 using CourtBooking.Server;
 using CourtBooking.Server.Endpoints;
 using CourtBooking.Server.Models;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Data;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualBasic;
-using System;
-using System.Data;
-using LoginRequest = CourtBooking.Server.Models.LoginRequest;
-using RegisterRequest = CourtBooking.Server.Models.RegisterRequest;
 
-//TODO migrate databse updates
-//merge deploy withouy overwriting database
+//TODO migrate databse updates (automatically on deploy? when not to)
+//merge deploy without overwriting database
+//unit tests
 //google,facebook logins
 //ladder list, update scores
-// check 500 errors, offline notification
+// check 500 errors,
+// offline notification \/
+//public github?
+//deploy docker image to registry run release mode
+// auto deploy CI github actions
+//env variables for connection strings, secrets, page config
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

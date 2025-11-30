@@ -3,6 +3,7 @@ import Form from 'react-bootstrap/Form';
 //import Form.label from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { post } from './Utility.js';
+import { useNavigate } from "react-router";
 
 /**
  * ReactComponent
@@ -15,6 +16,8 @@ const Login = ({ user, setUser }) => {
     const [loginErrorText, setLoginErrorText] = useState('');
     const [users, setUsers] = useState();
     const [state, action, isPending] = useActionState(handleLogin, null);
+
+    let navigate = useNavigate();
 
     useEffect(() => {
         const checkLogin = async () => {
@@ -41,14 +44,14 @@ const Login = ({ user, setUser }) => {
             getUsers();
     }, [user]);
 
-    const deleteUser = async (email) => {
-        let result = await post('api/Users', email, null, "DELETE");
+    const deleteUser = async (Id) => {
+        let result = await post('api/Users', { Id: Id }, null, "DELETE");
         if (result.ok)
             getUsers();
     }
 
-    const updateMembership = async (email, role) => {
-        await post('api/Users/toggleRole', { email: email, role: role }, null, "PATCH");
+    const updateMembership = async (Id, role) => {
+        await post('api/Users/toggleRole', { Id: Id, role: role }, null, "PATCH");
     }
 
     const logout = async () => {
@@ -99,6 +102,7 @@ const Login = ({ user, setUser }) => {
             response = await response.json();
             setUser(response)
             setLoginErrorText('Logged in');
+            navigate("/reservations");
         }
     }
 
@@ -155,19 +159,19 @@ const Login = ({ user, setUser }) => {
                                     <td>
                                         <input type="checkbox"
                                             checked={isMember}
-                                            onChange={() => { setUsers({ ...users, [i]: { ...thisUser, roles: isMember ? thisUser.roles.filter(v => v !== "Member") : thisUser.roles.concat("Member") } }); updateMembership(thisUser.email, "Member"); }}
+                                            onChange={() => { setUsers({ ...users, [i]: { ...thisUser, roles: isMember ? thisUser.roles.filter(v => v !== "Member") : thisUser.roles.concat("Member") } }); updateMembership(thisUser.Id, "Member"); }}
                                         />
                                     </td>
                                     <td>
                                         <input type="checkbox"
                                             checked={isAdmin}
-                                            onChange={() => { setUsers({ ...users, [i]: { ...thisUser, roles: isAdmin ? thisUser.roles.filter(v => v !== "Admin") : thisUser.roles.concat("Admin") } }); updateMembership(thisUser.email, "Admin"); }}
+                                            onChange={() => { setUsers({ ...users, [i]: { ...thisUser, roles: isAdmin ? thisUser.roles.filter(v => v !== "Admin") : thisUser.roles.concat("Admin") } }); updateMembership(thisUser.Id, "Admin"); }}
                                         />
                                     </td>
                                     <td>
                                         <input type="button"
                                             value="delete"
-                                            onClick={() => { deleteUser(thisUser.email) }}
+                                            onClick={() => { deleteUser(thisUser.Id) }}
                                         />
                                     </td>
                                 </tr>

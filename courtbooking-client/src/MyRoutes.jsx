@@ -17,7 +17,7 @@ const MyRoutes = () => {
             <Route path="/" element={<App />}>
                 <Route index element={<Login user={user} setUser={setUser} />}/>
                 <Route path="/reservations" element={<Reservations user={user} />} />
-                <Route path="/ladder/*" element={<Ladder />} />
+                <Route path="/ladder/*" element={<Ladder user={user} />} />
             </Route>
         </Routes >
     );
