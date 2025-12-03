@@ -15,7 +15,7 @@ const Reservations = ({ user }) => {
             <Tabs
                 defaultActiveKey="1"
                 id="uncontrolled-tab-example"
-                className="mb-3"
+                className="mb-3 mt-5"
                 activeKey={key}
                 onSelect={(k) => setKey(k)}
             >

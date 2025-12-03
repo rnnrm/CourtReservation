@@ -18,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 // TODO: remove databse from version control \/
 // TODO: calendar width hidden burger menu week view
 
+// TODO: migration for score array, validate match form
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

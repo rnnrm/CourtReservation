@@ -19,18 +19,6 @@ const Login = ({ user, setUser }) => {
 
     let navigate = useNavigate();
 
-    useEffect(() => {
-        const checkLogin = async () => {
-            let response = await post('api/auth/check', null, null, "GET");
-            if (response.ok) {
-                response.json().then(data => {
-                    setUser(data);
-                });
-            }
-        };
-        checkLogin();
-    }, [setUser]);
-
     const getUsers = async () => {
         let response = await post('api/Users', null, null, "GET");
         if (response.ok) 
@@ -107,8 +95,8 @@ const Login = ({ user, setUser }) => {
     }
 
     return (
-        <>
-            <h2>Login</h2>
+        <div className="p-4">
+            <h2 className="my-3">Login</h2>
             <Form action={action} style={{ marginBottom: '1rem' }} >
                 {user === null ? (
                     <>
@@ -137,7 +125,7 @@ const Login = ({ user, setUser }) => {
                 }
                 {loginErrorText && <div style={{ color: 'red' }}>{loginErrorText}</div>}
                 <div>{state}</div>
-                <p>If you are a member, let a club administrator know your display name after you register so that they can activate your account.</p>
+                <p className="my-3">If you are a member, let a club administrator know your display name after you register so that they can activate your account.</p>
             </Form>
             {users && user &&
                 <div style={{ height: "400px", overflowY: "scroll" }}>
@@ -180,7 +168,7 @@ const Login = ({ user, setUser }) => {
                     </table>
                 </div>
             }
-        </>
+        </div>
     );
 };
 

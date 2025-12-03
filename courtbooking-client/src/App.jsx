@@ -17,7 +17,7 @@ function App() {
     useEffect(() => {
         const checkOffline = async () => {
             try {
-                let response = await fetch('api/check', { signal: AbortSignal.timeout(15000) });
+                let response = await fetch('api/check', { signal: AbortSignal.timeout(10000) });
                 if (response.ok || response.status === "401")
                     setOffline(false);
             } catch (error) {
@@ -87,8 +87,8 @@ function App() {
                 </Container>
             </Navbar>
 
-            <div className="mt-4">
-            <Outlet />
+            <div>
+                <Outlet/>
                 {(offline) ?
                     <Alert variant="danger" onClose={() => { } } dismissible>
                         {/*<Alert.Heading>Offline</Alert.Heading>*/}

@@ -20,7 +20,7 @@
         public required string Loser1 { get; set; }
         public string? Loser2 { get; set; } = null;
         public required DateTime DatePlayed { get; set; } = DateTime.MinValue;
-        public required string Score { get; set; }
+        public required int[] Score { get; set; }
         public required bool Confirmed { get; set; } = false;
         public required string ReportedBy { get; set; }
 
