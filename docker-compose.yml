@@ -1,6 +1,8 @@
 services:
   courtbooking.server:
-    image: ${DOCKER_REGISTRY-}courtbookingserver
+    env_file:
+      - .env
+    image: "${DOCKER_REGISTRY}${IMAGE_NAME}:${IMAGE_TAG}"
     build:
       context: .
       dockerfile: CourtBooking.Server/Dockerfile
@@ -10,6 +12,8 @@ services:
       - "32771:8081"  # HostPort:ContainerPort (8081 is your container's HTTPS port)
       #- "5002:8080"   # Optional: HTTP
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTPS_PORTS=8081
-      - ASPNETCORE_HTTP_PORTS=8080
+      #- ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ASPNETCORE_URLS=${ASPNETCORE_URLS}
+      - DB_CONNECTION_STRING=${DB_CONNECTION_STRING}

@@ -4,10 +4,15 @@ import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import { post } from './Utility.js';
 import Modal from 'react-bootstrap/Modal';
+import Form from 'react-bootstrap/Form';
 
 const Ladder = ({ user }) => {
 
-
+    const [opponent, setOpponent] = useState(null);
+    const [sets, setSets] = useState(0);
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = (opponent) => { setShow(true) };
     const [users, setUsers] = useState();
 
     const getUsers = async () => {
@@ -23,6 +28,8 @@ const Ladder = ({ user }) => {
             getUsers();
     }, [setUsers, user]);
 
+    const opponents = users && Object.entries(users).filter(u => console.log(u));
+
     const logMatch = async ( winner, loser, datePlayed, result) => {
         let _ = await post('api/ladder',
             {
@@ -32,11 +39,59 @@ const Ladder = ({ user }) => {
 
     };
 
+    const register = async (formData) => {
+    };
+
     return (
-        <>
-            <Modal >
-                Test
-            </Modal>
+        <><Modal show={show} onHide={handleClose}>
+            <Modal.Header closeButton>
+                <Modal.Title>Record match result</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Form>
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Select onChange={e=>setSets(e.target.value)} aria-label="Default select example">
+                            <option value={0}>Sets</option>
+                            <option value={1}>One</option>
+                            <option value={2}>Two</option>
+                            <option value={3}>Three</option>
+                        </Form.Select>
+                        {console.log("sets",sets)}
+                        {[...Array(sets)].map((x, i) => {
+                            <div key={x}>
+                            <Form.Label >Set {i + 1} score</Form.Label>
+                            <Form.Control
+                                type="number"
+                                placeholder="0"
+                                autoFocus
+                                />
+                            </div>
+                            } )
+                        }
+                    </Form.Group>
+                    <Form.Group
+                        className="mb-3"
+                        controlId="exampleForm.ControlTextarea1"
+                    >
+                        <Form.Label>Select opponent</Form.Label>
+                        <Form.Select onChange={e=>setOpponent(e.target.value)} aria-label="Default select example">
+                            {opponents?.map(([i, opponent]) => <option value={opponent.Id}>{opponent.name}</option>)}
+                        </Form.Select>
+                    </Form.Group>
+                </Form>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={handleClose}>
+                    Cancel
+                </Button>
+                <Button variant="primary" onClick={() => {
+                        logMatch(user.Id, opponent.Id, Date(), 0);
+                        handleClose();
+                    }}>
+                    Submit Match
+                </Button>
+            </Modal.Footer>
+        </Modal>
             <Table striped>
                 <thead>
                     <tr>
@@ -46,17 +101,13 @@ const Ladder = ({ user }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    { users &&
-                        Object.entries(users).map(([i, opponent]) => {
-                        let isMember = opponent.roles.includes("Member");
-                        //let isAdmin = opponent.roles.includes("Admin");
-                        if (!(isMember)) return false;
+                    {opponents?.map(([i, opponent]) => {
                         return <tr key={opponent.Id}>
                             <td>{opponent.rank}</td>
                             <td>{opponent.name}</td>
                             <td> {user?.role === ("Member") &&
                                 <>
-                                    <Button onClick={() => logMatch(user.Id, opponent.Id, Date(), 0)}>Win</Button>
+                                <Button onClick={handleShow}>Win</Button>
                                     <Button onClick={() => logMatch(opponent.Id, user.Id, Date(), 0)}>Lose</Button>
                                 </>
                                 }

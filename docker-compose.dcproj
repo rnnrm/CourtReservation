@@ -10,6 +10,8 @@
     <DockerServiceName>courtbooking.server</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
+    <None Include=".env" />
+    <None Include=".github\workflows\publish-docker.yml" />
     <None Include=".gitignore" />
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
