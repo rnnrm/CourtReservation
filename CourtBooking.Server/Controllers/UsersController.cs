@@ -66,7 +66,7 @@ namespace CourtBooking.Server.Controllers
 
         // PUT api/<Users>/role
         [HttpPatch("toggleRole")]
-        public async Task<IActionResult> Patch([FromServices] RoleManager<IdentityRole> roleManager,[FromServices] ApplicationDbContext db, [FromBody] RoleParameters p )
+        public async Task<IActionResult> Patch([FromServices] RoleManager<IdentityRole> roleManager, [FromServices] ApplicationDbContext db, [FromBody] RoleParameters p)
         {
             var currentUser = await _userManager.FindByIdAsync(p.Id);
             if (currentUser == null) return NotFound();
@@ -75,14 +75,17 @@ namespace CourtBooking.Server.Controllers
             if (await _userManager.IsInRoleAsync(currentUser!, p.Role))
             {
                 roleresult = await _userManager.RemoveFromRoleAsync(currentUser!, p.Role);
-                if (p.Role == "Member") {
-                    //currentUser.Rank = 9999;
+                if (p.Role == "Member")
+                {
+                    currentUser.Rank = 0;
                     await _userManager.UpdateAsync(currentUser);
                 }
             }
-            else {
+            else
+            {
                 roleresult = await _userManager.AddToRoleAsync(currentUser!, p.Role);
-                if (p.Role == "Member") {
+                if (p.Role == "Member")
+                {
                     // Find the RoleId for "Member"
                     var memberRole = await roleManager.FindByNameAsync("Member");
                     if (memberRole != null)
@@ -119,12 +122,12 @@ namespace CourtBooking.Server.Controllers
             if (user != null)
             {
                 //delete users reservaions
-                db.RemoveRange( db.Reservations.Where(r => r.ExtendedProps.Owner == user.Id) );
+                db.RemoveRange(db.Reservations.Where(r => r.ExtendedProps.Owner == user.Id));
 
                 //delete user
                 var result = await _userManager.DeleteAsync(user);
                 if (!result.Succeeded)
-                    return BadRequest( result.Errors.Select(e => e.Description));
+                    return BadRequest(result.Errors.Select(e => e.Description));
 
                 await db.SaveChangesAsync();
                 return Ok();

@@ -1,18 +1,9 @@
 import { useEffect, useState, useActionState } from 'react';
 import Form from 'react-bootstrap/Form';
-//import Form.label from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
-import { post } from './Utility.js';
+import { post, errorStatus } from './Utility.js';
 import { useNavigate } from "react-router";
 
-/**
- * ReactComponent
- * A reusable React component for the CourtBooking client.
- */
 const Login = ({ user, setUser }) => {
-    //const [name, setName] = useState('');
-    //const [password, setPassword] = useState('');
-    //const [email, setEmail] = useState('');
     const [loginErrorText, setLoginErrorText] = useState('');
     const [users, setUsers] = useState();
     const [state, action, isPending] = useActionState(handleLogin, null);
@@ -32,14 +23,14 @@ const Login = ({ user, setUser }) => {
             getUsers();
     }, [user]);
 
-    const deleteUser = async (Id) => {
-        let result = await post('api/Users', { Id: Id }, null, "DELETE");
+    const deleteUser = async (id) => {
+        let result = await post('api/Users', { Id: id }, null, "DELETE");
         if (result.ok)
             getUsers();
     }
 
-    const updateMembership = async (Id, role) => {
-        await post('api/Users/toggleRole', { Id: Id, role: role }, null, "PATCH");
+    const updateMembership = async (id, role) => {
+        await post('api/Users/toggleRole', { Id: id, Role: role }, null, "PATCH");
     }
 
     const logout = async () => {
@@ -56,11 +47,12 @@ const Login = ({ user, setUser }) => {
         },
             (response) => {
                 switch (response.status) {
+                    case 400:
                     case 401:
                         setLoginErrorText('Email already registered, choose another.');
                         break;
                     default:
-                        setLoginErrorText(response);
+                        setLoginErrorText(errorStatus(response.status));
                 }
             }
         );
@@ -69,7 +61,6 @@ const Login = ({ user, setUser }) => {
     }
 
     async function handleLogin(prevState, formData) {
-        console.log(JSON.stringify(formData));
         var response = await post('/api/auth/login?useCookies=true', {
             Email: formData.get('email'),
             Name: formData.get('name'),
@@ -77,11 +68,12 @@ const Login = ({ user, setUser }) => {
         },
             (response) => {
                 switch (response.status) {
+                    case 400:
                     case 401:
                         setLoginErrorText('Invalid username or password');
                         break;
                     default: 
-                        setLoginErrorText(response);
+                        setLoginErrorText(errorStatus(response.status));
                     
                 }
             }
@@ -147,19 +139,37 @@ const Login = ({ user, setUser }) => {
                                     <td>
                                         <input type="checkbox"
                                             checked={isMember}
-                                            onChange={() => { setUsers({ ...users, [i]: { ...thisUser, roles: isMember ? thisUser.roles.filter(v => v !== "Member") : thisUser.roles.concat("Member") } }); updateMembership(thisUser.Id, "Member"); }}
+                                            onChange={() => {
+                                                setUsers({
+                                                    ...users,
+                                                    [i]: {
+                                                        ...thisUser, roles: isMember ?
+                                                            thisUser.roles.filter(v => v !== "Member")
+                                                            : thisUser.roles.concat("Member")
+                                                    }
+                                                }); updateMembership(thisUser.id, "Member");
+                                            }}
                                         />
                                     </td>
                                     <td>
                                         <input type="checkbox"
                                             checked={isAdmin}
-                                            onChange={() => { setUsers({ ...users, [i]: { ...thisUser, roles: isAdmin ? thisUser.roles.filter(v => v !== "Admin") : thisUser.roles.concat("Admin") } }); updateMembership(thisUser.Id, "Admin"); }}
+                                            onChange={() => {
+                                                setUsers({
+                                                    ...users,
+                                                    [i]: {
+                                                        ...thisUser, roles: isAdmin ?
+                                                            thisUser.roles.filter(v => v !== "Admin")
+                                                            : thisUser.roles.concat("Admin")
+                                                    }
+                                                }); updateMembership(thisUser.id, "Admin");
+                                            }}
                                         />
                                     </td>
                                     <td>
                                         <input type="button"
                                             value="delete"
-                                            onClick={() => { deleteUser(thisUser.Id) }}
+                                            onClick={() => { deleteUser(thisUser.id) }}
                                         />
                                     </td>
                                 </tr>

@@ -24,15 +24,12 @@ export const post = async (url, obj, errorResponses, method = "POST") => {
                 errorResponses(response);
         }
     } catch (error) {
-        if (error.name === "TimeoutError") {
-            console.log('10000 ms timeout');
-        }
         console.error('Fetch request failed', error);
     }
 
     return response;
 }
 
-const errorStatus = (status) => {
+export const errorStatus = (status) => {
     return status +" "+ status < 300 ? 'Success' : status < 400 ? 'Redirection' : status < 500 ? 'Client/authorization Error' : 'Server Error';
 }

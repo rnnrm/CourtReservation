@@ -1,19 +1,12 @@
 ﻿using CourtBooking.Server.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
 using System.Security.Claims;
-using System.Text.RegularExpressions;
-using static CourtBooking.Server.Controllers.UsersController;
 
 namespace CourtBooking.Server.Controllers
 {
-
-
-    public record LadderResultParameters(string CompetitionName, string Opponent, int[] Score, DateOnly DatePlayed, string? Partner=null, string? Opponent2=null);
+    public record LadderResultParameters(string CompetitionName, string Opponent, int[] Score, DateOnly DatePlayed, string? Partner = null, string? Opponent2 = null);
 
     [Authorize(Roles = "Member,Admin")]
     [Route("api/[controller]")]
@@ -21,15 +14,15 @@ namespace CourtBooking.Server.Controllers
     public class LadderController : ControllerBase
     {
 
-        [HttpPost("ladder")]
+        [HttpPost]
         public async Task<IActionResult> Post([FromServices] UserManager<AppUser> _userManager, [FromServices] ApplicationDbContext db, [FromBody] LadderResultParameters p)
         {
             //prune unconfirmed matches older than 7 days
             db.MatchResults.RemoveRange(db.MatchResults.Where(m => !m.Confirmed && m.DatePlayed < DateTime.Now.AddDays(-7)));
             await db.SaveChangesAsync();
 
-            var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-            var user = await _userManager.FindByEmailAsync(email);
+            var Id = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var user = await _userManager.FindByIdAsync(Id);
 
             string ReportedBy = user.Id;
             int win = 0, lose = 0;
@@ -44,15 +37,15 @@ namespace CourtBooking.Server.Controllers
             string Loser1 = p.Opponent;
             string? Winner2 = p.Partner;
             string? Loser2 = p.Opponent2;
-            if (lose>win)
+            if (lose > win)
             {
-                // TODO: use swap operator score = [x,y]
-                int temp;
+                //int temp;
                 for (int i = 0; i < p.Score.Length; i += 2)
                 {
-                    temp = p.Score[i];
-                    p.Score[i] = p.Score[i + 1];
-                    p.Score[i + 1] = temp;
+                    (p.Score[i], p.Score[i + 1]) = (p.Score[i + 1], p.Score[i]);
+                    //temp = p.Score[i];
+                    //p.Score[i] = p.Score[i + 1];
+                    //p.Score[i + 1] = temp;
                 }
                 Winner1 = p.Opponent;
                 Loser1 = user.Id;
@@ -60,42 +53,61 @@ namespace CourtBooking.Server.Controllers
                 Loser2 = p.Opponent2;
             }
 
-            try { 
-                DateOnly today = new DateOnly();
-                //var b = from match in db.MatchResults
-                //where DateOnly.FromDateTime(match.DatePlayed).Equals(today)
+            try
+            {
+                //var b = from m in db.MatchResults
+                //where DateOnly.FromDateTime(match.DatePlayed).CompareTo(p.DatePlayed)==0
                 //&& match.Winner1 == p.Winner1
                 //&& match.Loser1 == p.Loser1
-                //&& match.Winner2 == p.Winner2
-                //&& match.Loser2 == p.Loser2
-                //select top 1 match;
+                ////&& match.Winner2 == p.Winner2
+                ////&& match.Loser2 == p.Loser2
+                //&& match.CompetitionName == p.CompetitionName
+                //&& match.ReportedBy != ReportedBy
+                //&& match.Confirmed == false
+                //select m;
 
                 //find other players' reported match result
                 var match = db.MatchResults.Where(match =>
-                        match.DatePlayed.Equals(p.DatePlayed)
+                        DateOnly.FromDateTime(match.DatePlayed).CompareTo(p.DatePlayed) == 0
                         && match.Winner1 == Winner1
                         && match.Loser1 == Loser1
                         //&& match.Winner2 == p.Winner2
                         //&& match.Loser2 == p.Loser2
                         && match.CompetitionName == p.CompetitionName
                         && match.ReportedBy != ReportedBy
-                        //&& match.Score == p.Result
-                ).First();
+                        && match.Confirmed == false
+                //&& match.Score == p.Result
+                ).FirstOrDefault();
 
                 //not found, create new pending match
                 if (match == null)
                 {
+                    //check for already reported unconfirmed result from this player
+                    match = db.MatchResults.Where(match =>
+                            DateOnly.FromDateTime(match.DatePlayed).CompareTo(p.DatePlayed) == 0
+                            && match.Winner1 == Winner1
+                            && match.Loser1 == Loser1
+                            //&& match.Winner2 == p.Winner2
+                            //&& match.Loser2 == p.Loser2
+                            && match.CompetitionName == p.CompetitionName
+                            && match.ReportedBy == ReportedBy
+                            && match.Confirmed == false
+                    //&& match.Score == p.Result
+                    ).FirstOrDefault();
+                    if (match != null)
+                        return Ok("Pending");
+
                     MatchResult mr = new()
                     {
                         Id = System.Guid.NewGuid().ToString(),
                         Confirmed = false,
                         CompetitionName = p.CompetitionName,
-                        DatePlayed = new DateTime(p.DatePlayed,new TimeOnly()),
+                        DatePlayed = new DateTime(p.DatePlayed, new TimeOnly()),
                         Winner1 = Winner1,
                         Winner2 = Winner2,
                         Loser1 = Loser1,
                         Loser2 = Loser2,
-                        Score = (int[])p.Score.Clone(),
+                        Score = (int[])p.Score,
                         ReportedBy = ReportedBy
                     };
                     db.MatchResults.Add(mr);
@@ -107,24 +119,27 @@ namespace CourtBooking.Server.Controllers
                     //update player ranks, swapping them with anyone in between
                     var winner = await _userManager.FindByIdAsync(match.Winner1);
                     var loser = await _userManager.FindByIdAsync(match.Loser1);
-                    if (winner?.Rank < loser?.Rank)
+                    if (winner?.Rank > loser?.Rank)
                     {
-                        var higherPlayer = db.Users.Where(user => user.Rank == winner.Rank + 1).First();
-                        higherPlayer.Rank--;
-                        winner.Rank++;
+                        var higherPlayer = db.Users.Where(user => user.Rank == winner.Rank - 1).First();
+                        higherPlayer.Rank++;
+                        winner.Rank--;
 
                         if (higherPlayer != loser)
                         {
-                            db.Users.Where(user => user.Rank == loser.Rank - 1).First().Rank++;
-                            loser.Rank--;
+                            db.Users.Where(user => user.Rank == loser.Rank + 1).First().Rank--;
+                            loser.Rank++;
                         }
                     }
                     match.Confirmed = true;
+                    await db.SaveChangesAsync();
                     return Ok("Updated");
                 }
             }
             catch (Exception e)
             {
+                Console.WriteLine(e.Message);
+                return BadRequest(e.Message);
             }
 
 

@@ -19,12 +19,13 @@ namespace CourtBooking.Server
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Reservation>()
                 .OwnsOne(p => p.ExtendedProps,
-                eb => {
+                eb =>
+                {
                     eb.Property(p => p.Owner).HasColumnName("ExtendedProps_Owner");
                     eb.Property(p => p.Court).HasColumnName("ExtendedProps_Court");
                 });
         }
-        
+
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<MatchResult> MatchResults { get; set; }
     }

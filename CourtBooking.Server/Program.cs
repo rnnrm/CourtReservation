@@ -8,17 +8,13 @@ using Microsoft.EntityFrameworkCore;
 // TODO: merge deploy without overwriting database
 // TODO: unit tests
 // TODO: google,facebook logins
-// TODO: ladder list, update scores
-// TODO: check 500 errors,
-// TODO: offline notification \/
+// TODO: check 500 errors,\/
 // TODO: public github?
 // TODO: deploy docker image to registry run release mode
 // TODO: auto deploy CI github actions
 // TODO: env variables for connection strings, secrets, page config
-// TODO: remove databse from version control \/
-// TODO: calendar width hidden burger menu week view
-
-// TODO: migration for score array, validate match form
+// TODO: validate match form
+// TODO: set owner id to id not email on old records?
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -32,7 +28,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(
     options => //options.UseInMemoryDatabase("AppDb"));
     options.UseSqlite(
         /*builder.Configuration.GetConnectionString("DefaultConnection") 
-        ?? */Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")  
+        ?? */Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
         ?? "Data Source=app.db",
         b => b.MigrationsAssembly("CourtBooking.Server")));
 
@@ -143,11 +139,12 @@ using (var scope = app.Services.CreateScope())
         {
             UserName = "ClubAdmin",
             Email = "aa@aa.aa",
-            Rank=999
+            Rank = 999
         };
         await userManager.CreateAsync(user, "p@staW0rd!");
         await userManager.AddToRoleAsync(user, "Admin");
     }
-};
+}
+;
 
 app.Run();

@@ -32,7 +32,7 @@ export default function Calendar({ user, court }) {
                 post('api/Bookings', booking, i => JSON.stringify(i), "POST");
                 break;
             case '-':
-                post('api/Bookings', { BookingId:booking.Id, UserId:booking.ExtendedProps.owner }, i => JSON.stringify(i), "DELETE");
+                post('api/Bookings', { BookingId: booking.Id, UserId: booking.ExtendedProps.owner }, i => JSON.stringify(i), "DELETE");
                 break;
             case '=':
                 post('api/Bookings', booking, i => JSON.stringify(i), "PUT");
@@ -53,8 +53,8 @@ export default function Calendar({ user, court }) {
                 && Number(event.extendedProps?.court) === Number(court)
                 && !isGuestReservation(event)
             );
-        })) { 
-            alert("Time slot already taken for court "+court);
+        })) {
+            alert("Time slot already taken for court " + court);
             return;
         }
 
@@ -75,8 +75,8 @@ export default function Calendar({ user, court }) {
         }
     }
 
-    function handleAllowSelect(eventInfo) { 
-        console.log('handleAllowSelect',eventInfo.event.extendedProps.owner, user.Id);
+    function handleAllowSelect(eventInfo) {
+        //console.log('handleAllowSelect',eventInfo.event.extendedProps.owner, user.Id);
         if (eventInfo.event.extendedProps.owner !== user.Id &&
             user.role !== "Admin") return false; // only allow owner to modify booking)
         return true;
@@ -102,10 +102,10 @@ export default function Calendar({ user, court }) {
             }
         }
         else
-            alert(`Booking by ${eventInfo.event.title} \nFrom \n${eventInfo.event.startStr} \nto \n${eventInfo.event.endStr} \n${eventInfo.event.extendedProps.description??''}`);
+            alert(`Booking by ${eventInfo.event.title} \nFrom \n${eventInfo.event.startStr} \nto \n${eventInfo.event.endStr} \n${eventInfo.event.extendedProps.description ?? ''}`);
     }
-    function renderEventContent(eventInfo,timeText) {
-        console.log(JSON.stringify(eventInfo))
+    function renderEventContent(eventInfo, timeText) {
+        //console.log(JSON.stringify(eventInfo))
         return (
             <>
                 {eventInfo.timeText} {eventInfo.event.title}
@@ -114,8 +114,8 @@ export default function Calendar({ user, court }) {
     }
 
     function detectConflicts(stillEvent, movingEvent) {
-        console.log('overlap intercept');
-         
+        //console.log('overlap intercept');
+
         if ((stillEvent.extendedProps.court === movingEvent.extendedProps.court) && !isGuestReservation(stillEvent)) {
             return false;
         }
@@ -157,7 +157,7 @@ export default function Calendar({ user, court }) {
             eventChange={v => updateData(v, '=')}
             eventRemove={v => updateData(v, '-')}
             contentHeight={500}
-            //selectOverlap={detectConflicts}
+        //selectOverlap={detectConflicts}
         />
     )
 }

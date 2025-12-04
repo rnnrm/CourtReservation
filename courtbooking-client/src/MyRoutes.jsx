@@ -28,7 +28,7 @@ const MyRoutes = () => {
     return (
         <Routes>
             <Route path="/" element={<App />}>
-                <Route index element={<Login className={{ padding: "2rem" }} user={user} setUser={setUser} />}/>
+                <Route index element={<Login className={{ padding: "2rem" }} user={user} setUser={setUser} />} />
                 <Route path="/reservations" element={<Reservations user={user} />} />
                 <Route path="/ladder/*" element={<Ladder user={user} />} />
             </Route>

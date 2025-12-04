@@ -28,7 +28,7 @@ namespace CourtBooking.Server.Controllers
         {
 
             // Load reservations from DB (Start/End are stored as strings in current model).
-            var reservations = await _db.Reservations.Where(r=>r.ExtendedProps.Court==court).ToListAsync();
+            var reservations = await _db.Reservations.Where(r => r.ExtendedProps.Court == court).ToListAsync();
 
             // If no range provided, return all
             if (!start.HasValue && !end.HasValue)
@@ -53,7 +53,7 @@ namespace CourtBooking.Server.Controllers
                 }
 
                 // If only end provided -> reservation must start < end
-                if ( end.HasValue)
+                if (end.HasValue)
                 {
                     return reservationEffectiveStart < end.Value;
                 }
@@ -90,13 +90,13 @@ namespace CourtBooking.Server.Controllers
 
         // PUT api/<Bookings>/5
         [HttpPut]
-        public async Task<IActionResult> Put([FromServices] SignInManager<AppUser> signInManager,[FromBody] Reservation reservation)
+        public async Task<IActionResult> Put([FromServices] SignInManager<AppUser> signInManager, [FromBody] Reservation reservation)
         {
             if (reservation == null) return BadRequest();
 
             var userEmail = User.FindFirstValue(ClaimTypes.Email);
             var user = await signInManager.UserManager.FindByEmailAsync(userEmail);
-            if ( user?.Id != reservation.ExtendedProps.Owner && !User.IsInRole("Admin")) //!User.HasClaim(ClaimTypes.Email, reservation.ExtendedProps.Owner) &&
+            if (user?.Id != reservation.ExtendedProps.Owner && !User.IsInRole("Admin")) //!User.HasClaim(ClaimTypes.Email, reservation.ExtendedProps.Owner) &&
                 return Unauthorized();
 
             var existing = await _db.Reservations.FindAsync(reservation.Id);
@@ -127,7 +127,7 @@ namespace CourtBooking.Server.Controllers
         public async Task<IActionResult> Delete([FromServices] SignInManager<AppUser> signInManager,
             [FromBody] DeleteBookingDto deleteBookingDto)
         {
-            Console.WriteLine("User.Claims: "+string.Concat(User.Claims));
+            Console.WriteLine("User.Claims: " + string.Concat(User.Claims));
 
             //user must own reservation or be admin
             var userEmail = User.FindFirstValue(ClaimTypes.Email);

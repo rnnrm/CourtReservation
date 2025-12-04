@@ -22,7 +22,7 @@ public static class AuthEndpoints
             if (request == null || string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
                 return Results.BadRequest("Email and Password are required.");
 
-            var user = new AppUser { UserName = request.Name, Email = request.Email, Rank = 9999 };
+            var user = new AppUser { UserName = request.Name, Email = request.Email, Rank = 0 };
             var result = await userManager.CreateAsync(user, request.Password!);
             if (!result.Succeeded)
                 return Results.ValidationProblem(result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description }));
@@ -39,18 +39,25 @@ public static class AuthEndpoints
         {
             if (request == null || string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
                 return Results.BadRequest("Email and Password are required.");
+            try
+            {
+                var user = await userManager.FindByEmailAsync(request.Email);
+                if (user == null) return Results.NotFound("User not found");
 
-            var user = await userManager.FindByEmailAsync(request.Email);
-            if (user == null) return Results.NotFound("User not found");
+                if (!await userManager.CheckPasswordAsync(user, request.Password))
+                    return Results.ValidationProblem(new Dictionary<string, string[]> { ["Credentials"] = new[] { "Invalid credentials." } });
 
-            if (!await userManager.CheckPasswordAsync(user, request.Password))
-                return Results.ValidationProblem(new Dictionary<string, string[]> { ["Credentials"] = new[] { "Invalid credentials." } });
-
-           // userManager.GetRolesAsync(user);
-            await signInManager.SignInAsync(user, isPersistent: true);
-            //var userRole = signInManager.Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
-            var role = signInManager.Context.User.IsInRole("Admin") ? "Admin" : signInManager.Context.User.IsInRole("Member") ? "Member" : "Guest";
-            return Results.Ok(new { user.Id, name = user.UserName, role, user.Rank });
+                // userManager.GetRolesAsync(user);
+                await signInManager.SignInAsync(user, isPersistent: true);
+                //var userRole = signInManager.Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                var role = signInManager.Context.User.IsInRole("Admin") ? "Admin" : signInManager.Context.User.IsInRole("Member") ? "Member" : "Guest";
+                return Results.Ok(new { user.Id, name = user.UserName, role, user.Rank });
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("e.Message " + e.Message);
+                return Results.BadRequest(e.Message);
+            }
         });
 
         group.MapGet("/logout", [Authorize] async (SignInManager<AppUser> signInManager) =>
@@ -66,9 +73,10 @@ public static class AuthEndpoints
             var isAuthenticated = user.Identity!.IsAuthenticated;
             var role = user.IsInRole("Admin") ? "Admin" : user.IsInRole("Member") ? "Member" : "";
 
-            if (isAuthenticated) {
-                var email = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-                var appuser = await signInManager.UserManager.FindByEmailAsync(email);
+            if (isAuthenticated)
+            {
+                var id = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                var appuser = await signInManager.UserManager.FindByIdAsync(id);
                 return Results.Ok(new { name = user.Identity.Name, appuser?.Id, role, appuser?.Rank });
             }
             else

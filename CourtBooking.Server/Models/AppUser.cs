@@ -4,6 +4,6 @@ namespace CourtBooking.Server.Models
 {
     public class AppUser : IdentityUser
     {
-        public required int Rank { get; set; } = 9999;
+        public required int Rank { get; set; } = 0;
     }
 }
