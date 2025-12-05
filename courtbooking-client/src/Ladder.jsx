@@ -10,10 +10,11 @@ import Col from 'react-bootstrap/Col';
 
 const Ladder = ({ user }) => {
 
+    const [matchStatus, setMatchStatus] = useState(null);
     const [score, setScore] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
     const [opponent, setOpponent] = useState(null);
-    const td = new Date().get;
-    const twoWeeksAgo = new Date(td.getFullYear(), td.getMonth(), td.getDay()-14).toISOString().split('T')[0];
+    const td = new Date();
+    const twoWeeksAgo = new Date(td.getYear(), td.getMonth(), td.getDay()-14).toISOString().split('T')[0];
     const today = td.toISOString().split('T')[0];
     const [datePlayed, setDate] = useState(today);
     const [sets, setSets] = useState(1);
@@ -23,7 +24,7 @@ const Ladder = ({ user }) => {
         setOpponent(null);
         setShow(false)
     };
-    const handleShow = () => { setShow(true) };
+    const handleShow = () => { setMatchStatus(null); setShow(true) };
     const [users, setUsers] = useState(null);
     const [error, setError] = useState(null);
     const [state, action, isPending] = useActionState(logMatch, null);
@@ -60,6 +61,9 @@ const Ladder = ({ user }) => {
         handleClose();
         getUsers();
         setError("");
+        response = await response.json();
+        if (response === "Pending")
+            setMatchStatus("Result recorded/updated. Awaiting opponent confirmation.");
     };
 
     return (
@@ -163,9 +167,14 @@ const Ladder = ({ user }) => {
 
 
             {user?.role === ("Member") &&
+                <>
                 <p>
-                    <Button onClick={handleShow}>Record match result</Button>
+                    <button onClick={handleShow}>Record match result</button>                    
                 </p>
+                <p>
+                    {matchStatus}
+                </p>
+                </>
             }
             <Table striped>
                 <thead>

@@ -95,7 +95,10 @@ namespace CourtBooking.Server.Controllers
                     //&& match.Score == p.Result
                     ).FirstOrDefault();
                     if (match != null)
-                        return Ok("Pending");
+                    {
+                        //delete it and store new one
+                        db.MatchResults.Remove(match);
+                    }
 
                     MatchResult mr = new()
                     {
