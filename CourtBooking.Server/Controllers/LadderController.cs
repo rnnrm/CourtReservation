@@ -17,14 +17,14 @@ namespace CourtBooking.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromServices] UserManager<AppUser> _userManager, [FromServices] ApplicationDbContext db, [FromBody] LadderResultParameters p)
         {
-            //prune unconfirmed matches older than 7 days
-            db.MatchResults.RemoveRange(db.MatchResults.Where(m => !m.Confirmed && m.DatePlayed < DateTime.Now.AddDays(-7)));
+            //prune unconfirmed matches older than 14 days
+            db.MatchResults.RemoveRange(db.MatchResults.Where(m => !m.Confirmed && m.DatePlayed < DateTime.Now.AddDays(-14)));
             await db.SaveChangesAsync();
 
             var Id = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            var user = await _userManager.FindByIdAsync(Id);
+            var user = await _userManager.FindByIdAsync(Id!);
 
-            string ReportedBy = user.Id;
+            string ReportedBy = user!.Id;
             int win = 0, lose = 0;
             for (int i = 0; i < p.Score.Length; i += 2)
             {

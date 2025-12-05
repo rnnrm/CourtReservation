@@ -14,14 +14,17 @@ export const post = async (url, obj, errorResponses, method = "POST") => {
 
         if (!response.ok) {
             const contentType = response.headers.get("content-type");
-            if (!contentType || !contentType.includes("application/json")) {
-                console.log(errorStatus(response.status));
+            console.log('contentType',contentType);
+            if (!contentType || !contentType.includes("application/json") && !contentType.includes("application/problem+json")) {
+                console.log("not json error ", errorStatus(response.status));
+                if (errorResponses)
+                    errorResponses(errorStatus(response));
             } else  {
                 response = await response.json();
-                console.log(response);
+                console.log("application/json error",response);
+                if (errorResponses)
+                    errorResponses(response);
             }
-            if (errorResponses)
-                errorResponses(response);
         }
     } catch (error) {
         console.error('Fetch request failed', error);

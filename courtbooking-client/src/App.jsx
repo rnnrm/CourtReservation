@@ -10,24 +10,8 @@ import { Link } from 'react-router-dom';
 import { Outlet } from "react-router";
 import { useEffect, useState } from 'react';
 
-function App() {
-    const [offline, setOffline] = useState(false);
+function App({offline}) {
     let expand = 'md';
-
-    useEffect(() => {
-        const checkOffline = async () => {
-            try {
-                let response = await fetch('api/check', { signal: AbortSignal.timeout(10000) });
-                if (response.ok || response.status === "401")
-                    setOffline(false);
-            } catch (error) {
-                if (error.name === "TimeoutError") {
-                    setOffline(true);
-                }
-            }
-        }
-        checkOffline();
-    }, []);
 
     return (
         <>

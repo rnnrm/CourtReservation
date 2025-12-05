@@ -22,14 +22,21 @@ public static class AuthEndpoints
             if (request == null || string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
                 return Results.BadRequest("Email and Password are required.");
 
-            var user = new AppUser { UserName = request.Name, Email = request.Email, Rank = 0 };
-            var result = await userManager.CreateAsync(user, request.Password!);
-            if (!result.Succeeded)
-                return Results.ValidationProblem(result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description }));
+            try
+            {
+                throw new Exception("test");
+                var user = new AppUser { UserName = request.Name, Email = request.Email, Rank = 0 };
+                var result = await userManager.CreateAsync(user, request.Password!);
+                if (!result.Succeeded)
+                    return Results.ValidationProblem(result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description }));
 
-            await userManager.AddToRoleAsync(user, "Guest");
-            await signInManager.SignInAsync(user, isPersistent: false);
-            return Results.Ok();
+                return Results.Ok();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("e.Message " + e.Message);
+                return Results.Problem(e.Message);
+            }
         });
 
         group.MapPost("/login", async (
@@ -45,7 +52,7 @@ public static class AuthEndpoints
                 if (user == null) return Results.NotFound("User not found");
 
                 if (!await userManager.CheckPasswordAsync(user, request.Password))
-                    return Results.ValidationProblem(new Dictionary<string, string[]> { ["Credentials"] = new[] { "Invalid credentials." } });
+                    return Results.ValidationProblem(new Dictionary<string, string[]> { ["Credentials"] = ["Invalid credentials."] });
 
                 // userManager.GetRolesAsync(user);
                 await signInManager.SignInAsync(user, isPersistent: true);
@@ -56,7 +63,7 @@ public static class AuthEndpoints
             catch (Exception e)
             {
                 Console.WriteLine("e.Message " + e.Message);
-                return Results.BadRequest(e.Message);
+                return Results.Problem(e.Message);
             }
         });
 

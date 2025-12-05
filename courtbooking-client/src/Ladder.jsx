@@ -12,8 +12,8 @@ const Ladder = ({ user }) => {
 
     const [score, setScore] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
     const [opponent, setOpponent] = useState(null);
-    const td = new Date();
-    const monthAgo = new Date(td.getFullYear(), td.getMonth() - 1, td.getDay()).toISOString().split('T')[0];
+    const td = new Date().get;
+    const twoWeeksAgo = new Date(td.getFullYear(), td.getMonth(), td.getDay()-14).toISOString().split('T')[0];
     const today = td.toISOString().split('T')[0];
     const [datePlayed, setDate] = useState(today);
     const [sets, setSets] = useState(1);
@@ -40,7 +40,8 @@ const Ladder = ({ user }) => {
         getUsers();
     }, [user]);
 
-    const opponents = users && Object.values(users).filter((v) => v.roles.includes("Member")).sort((a, b) => a.rank - b.rank);
+    const opponents = users &&
+        Object.values(users).filter((v) => v.roles.includes("Member")).sort((a, b) => a.rank - b.rank);
 
     async function logMatch(prevState, formData) {
         //validate
@@ -78,7 +79,7 @@ const Ladder = ({ user }) => {
                                     <Form.Select id="opponentSelect"
                                         onChange={e => { setOpponent(opponents[e.target.value]) }}>
                                         <option>Select an opponent</option>
-                                        {opponents && opponents?.map((_opponent, i) => (_opponent.id !== user.id ?
+                                        {opponents && opponents.map((_opponent, i) => (_opponent.id !== user?.id ?
                                             (<option key={i} value={i}>{_opponent.name}</option>) : ""))}
                                     </Form.Select>
                                 </Col>
@@ -93,7 +94,7 @@ const Ladder = ({ user }) => {
                                     <Form.Control
                                         type="date"
                                         value={datePlayed}
-                                        min={monthAgo}
+                                        min={twoWeeksAgo}
                                         max={today}
                                         onChange={e => setDate(e.target.value)}
                                     />

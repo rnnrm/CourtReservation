@@ -132,7 +132,7 @@ using (var scope = app.Services.CreateScope())
         if (!await roleManager.RoleExistsAsync("Member"))
         {
             await roleManager.CreateAsync(new IdentityRole("Member"));
-            await roleManager.CreateAsync(new IdentityRole("Guest"));
+            //await roleManager.CreateAsync(new IdentityRole("Guest"));
             await roleManager.CreateAsync(new IdentityRole("Admin"));
         }
         var user = new AppUser

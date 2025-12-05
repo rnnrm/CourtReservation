@@ -12,7 +12,7 @@ const Login = ({ user, setUser }) => {
 
     const getUsers = async () => {
         let response = await post('api/Users', null, null, "GET");
-        if (response.ok) 
+        if (response.ok)
             setUsers(await response.json());
         else
             setUsers(null);
@@ -46,18 +46,21 @@ const Login = ({ user, setUser }) => {
             Password: formData.get('password')
         },
             (response) => {
-                switch (response.status) {
-                    case 400:
-                    case 401:
-                        setLoginErrorText('Email already registered, choose another.');
-                        break;
-                    default:
-                        setLoginErrorText(errorStatus(response.status));
+                let message = response;
+                if (response.title) {
+                    if (response.errors) {
+                        message = Object.values(response.errors).join(" ");
+                    }
+                    else
+                        message = response.title;
                 }
+                setLoginErrorText(message);
             }
         );
-        if (response.ok) 
-            setLoginErrorText('Registered successfully. Please log in.');
+        if (response.ok) {
+            setLoginErrorText('Registered successfully.');
+            handleLogin(null, formData);
+        }
     }
 
     async function handleLogin(prevState, formData) {
@@ -67,15 +70,15 @@ const Login = ({ user, setUser }) => {
             Password: formData.get('password')
         },
             (response) => {
-                switch (response.status) {
-                    case 400:
-                    case 401:
-                        setLoginErrorText('Invalid username or password');
-                        break;
-                    default: 
-                        setLoginErrorText(errorStatus(response.status));
-                    
+                let message = response;
+                if (response.title) {
+                    if (response.errors) {
+                        message = Object.values(response.errors).join(" ");
+                    }
+                    else
+                        message = response.title;
                 }
+                setLoginErrorText(message);
             }
         );
         if (response.ok) {
@@ -92,27 +95,27 @@ const Login = ({ user, setUser }) => {
             <Form action={action} style={{ marginBottom: '1rem' }} >
                 {user === null ? (
                     <>
-                    <div style={{ display: 'grid',gridTemplateColumns: 'auto' }} >
-                        <Form.Group className="mb-3" controlId="formBasicEmail">
-                            <Form.Label>
-                                <Form.Control name='email' autoComplete='Email' type="email" placeholder="Email" />
-                            </Form.Label>
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="formBasicName">
-                            <Form.Label>
-                                <Form.Control name='name' autoComplete='Name' type="text" placeholder="Name" />
-                            </Form.Label>
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="formBasicPassword">
-                            <Form.Label>
-                                <Form.Control name='password' autoComplete="current-password" type="password" placeholder="Password" />
-                            </Form.Label>
-                        </Form.Group>
-                    </div>
-                    <button variant="secondary" type="submit" id="login" disabled={isPending}>Login</button>
-                    <button variant="secondary" type="submit" id="reg" disabled={isPending} formAction={register}>Register</button>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'auto' }} >
+                            <Form.Group className="mb-3" controlId="formBasicEmail">
+                                <Form.Label>
+                                    <Form.Control name='email' autoComplete='Email' type="email" placeholder="Email" />
+                                </Form.Label>
+                            </Form.Group>
+                            <Form.Group className="mb-3" controlId="formBasicName">
+                                <Form.Label>
+                                    <Form.Control name='name' autoComplete='Name' type="text" placeholder="Name" />
+                                </Form.Label>
+                            </Form.Group>
+                            <Form.Group className="mb-3" controlId="formBasicPassword">
+                                <Form.Label>
+                                    <Form.Control name='password' autoComplete="current-password" type="password" placeholder="Password" />
+                                </Form.Label>
+                            </Form.Group>
+                        </div>
+                        <button variant="secondary" type="submit" id="login" disabled={isPending}>Login</button>
+                        <button variant="secondary" type="submit" id="reg" disabled={isPending} formAction={register}>Register</button>
                     </>)
-                :
+                    :
                     <button variant="secondary" type="button" id="logout" onClick={logout}>Logout</button>
                 }
                 {loginErrorText && <div style={{ color: 'red' }}>{loginErrorText}</div>}
