@@ -119,12 +119,13 @@ namespace CourtBooking.Server.Controllers
                     //update player ranks, swapping them with anyone in between
                     var winner = await _userManager.FindByIdAsync(match.Winner1);
                     var loser = await _userManager.FindByIdAsync(match.Loser1);
-                    if (winner?.Rank > loser?.Rank)
+                    if (winner?.Rank > loser?.Rank) //winner lower ranked, move up
                     {
                         var higherPlayer = db.Users.Where(user => user.Rank == winner.Rank - 1).First();
                         higherPlayer.Rank++;
                         winner.Rank--;
 
+                        await db.SaveChangesAsync();
                         if (higherPlayer != loser)
                         {
                             db.Users.Where(user => user.Rank == loser.Rank + 1).First().Rank--;
