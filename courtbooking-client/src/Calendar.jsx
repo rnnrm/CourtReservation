@@ -6,6 +6,46 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from "@fullcalendar/interaction" // needed for dayClick
 import { post } from './Utility.js';
 export default function Calendar({ user, court }) {
+/*
+    const recurringReservation = (event) => {
+
+        let calendarApi = selectInfo.view.calendar;
+        var events = calendarApi.getEvents();
+        let title = user.name;
+
+        calendarApi.unselect() // clear date selection
+        if (events.some(function (event) {
+            return (
+                selectInfo.start < event.end && selectInfo.end > event.start
+                && Number(event.extendedProps?.court) === Number(court)
+                && !isGuestReservation(event)
+            );
+        })) {
+            alert("Time slot already taken for court " + court);
+            return;
+        }
+        let hue = user.role == "Admin" ? 360 :
+            user.role == "Member" ? 190 : 60;
+        //const hue = Math.floor(court / 6.0 * 360.0);
+        let colour = "hsl(" + hue + ", 50%, 50%)"
+        if (title) {
+            calendarApi.addEvent({
+                id: new Date().getTime() + "-" + court,
+                title,
+                //start: selectInfo.startStr,
+                //end: selectInfo.endStr,
+                //allDay: selectInfo.allDay,
+                extendedProps: { court: court, owner: user.Id, description: "" },
+                backgroundColor: colour,
+                daysOfWeek: event.daysOfWeek,
+                startTime: event.startTime,
+                endTime: event.endTime,
+                startRecur: event.startRecur,
+                endRecur: event.endRecur,
+                groupId: event.groupId
+            }, 'backendServerEventSourceId')
+        }
+    };*/
 
     function isGuestReservation(res) {
         const guestColour = "hsl(60, 50%, 50%)";
@@ -25,7 +65,14 @@ export default function Calendar({ user, court }) {
             AllDay: data.event.allDay,
             ClassName: data.event.classNames.join(" "),
             ExtendedProps: { ...data.event.extendedProps },
-            BackgroundColor: data.event.backgroundColor
+            BackgroundColor: data.event.backgroundColor,
+
+            //DaysOfWeek: data.event.daysOfWeek,
+            //StartTime: data.event.startTime,
+            //EndTime: data.event.endTime,
+            //StartRecur: data.event.startRecur,
+            //EndRecur: data.event.endRecur,
+            //GroupId: data.event.groupId
         };
         switch (action) {
             case '+':
@@ -123,6 +170,7 @@ export default function Calendar({ user, court }) {
     }
 
     return (
+        <>
         <FullCalendar
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
             initialView="timeGridWeek"
@@ -158,6 +206,18 @@ export default function Calendar({ user, court }) {
             eventRemove={v => updateData(v, '-')}
             contentHeight={500}
         //selectOverlap={detectConflicts}
-        />
+            />
+            {user.role === "xxxAdmin" &&
+                <div>   
+                    Recurring reservation
+                    daysOfWeek
+                    startTime
+                    endTime
+                    startRecur
+                    endRecur
+                    groupId
+                </div>
+            }
+        </>
     )
 }

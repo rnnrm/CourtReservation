@@ -1,6 +1,7 @@
 using CourtBooking.Server;
 using CourtBooking.Server.Endpoints;
 using CourtBooking.Server.Models;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,6 +35,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+{
+    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+    googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+});
 builder.Services.AddAuthorization();
 builder.Services.AddIdentity<AppUser, IdentityRole>(cfg =>
 {
@@ -124,7 +130,7 @@ using (var scope = app.Services.CreateScope())
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
     //context.Database.EnsureCreated();
-    //context.Database.Migrate();
+    context.Database.Migrate();
 
     // Seed datas
     if (!context.Users.Any())

@@ -123,7 +123,7 @@ namespace CourtBooking.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MatchResults");
+                    b.ToTable("MatchResults", (string)null);
                 });
 
             modelBuilder.Entity("CourtBooking.Server.Models.Reservation", b =>
@@ -155,7 +155,7 @@ namespace CourtBooking.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Reservations");
+                    b.ToTable("Reservations", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -288,7 +288,7 @@ namespace CourtBooking.Server.Migrations
 
             modelBuilder.Entity("CourtBooking.Server.Models.Reservation", b =>
                 {
-                    b.OwnsOne("CourtBooking.Server.Models.ExtendedPropsObj", "ExtendedProps", b1 =>
+                    b.OwnsOne("CourtBooking.Server.Models.Reservation.ExtendedProps#CourtBooking.Server.Models.ExtendedPropsObj", "ExtendedProps", b1 =>
                         {
                             b1.Property<string>("ReservationId")
                                 .HasColumnType("TEXT");
@@ -307,7 +307,7 @@ namespace CourtBooking.Server.Migrations
 
                             b1.HasKey("ReservationId");
 
-                            b1.ToTable("Reservations");
+                            b1.ToTable("Reservations", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("ReservationId");

@@ -101,6 +101,16 @@ public static class AuthEndpoints
             return Results.Ok();
         });
 
+        //google id
+        //maybe signin-google does this already
+        group.MapPost("/google", async (UserManager<AppUser> userManager, string Id, string Name) =>
+        {
+            //fetch("google.com/tokenverify?Id=" + Id);
+            //find user by id
+            //if none register user
+            //get display name from gogole account
+        });
+
         return app;
     }
 }

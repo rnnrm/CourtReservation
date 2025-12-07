@@ -24,7 +24,7 @@ function App({offline}) {
 
             <Navbar collapseOnSelect fixed="top" expand={'md'} className="bg-body-tertiary mb-3">
                 <Container fluid>
-                    <Navbar.Brand as={Link} to="/">KenRho {offline ? "OFFLINE" : ""}</Navbar.Brand>
+                    <Navbar.Brand as={Link} to="/">KenRho Tennis Club {offline ? " OFFLINE" : ""}</Navbar.Brand>
                     <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-${expand}`} />
                     <Navbar.Collapse 
                         

@@ -1,12 +1,33 @@
 import { useEffect, useState, useActionState } from 'react';
 import Form from 'react-bootstrap/Form';
-import { post, errorStatus } from './Utility.js';
+import { post } from './Utility.js';
 import { useNavigate } from "react-router";
+import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
 
 const Login = ({ user, setUser }) => {
     const [loginErrorText, setLoginErrorText] = useState('');
     const [users, setUsers] = useState();
     const [state, action, isPending] = useActionState(handleLogin, null);
+
+    const handleSuccess = (response) => {
+        console.log("Login Success:", response);
+    };
+
+    const handleError = (r) => {
+        console.log("Login Failed",r);
+    };
+    const [profile, setProfile] = useState(null);
+    const login = useGoogleLogin({
+        onSuccess: async (tokenResponse) => {
+            console.log(tokenResponse);
+            const res = await post(
+                `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenResponse.access_token}`,null,null,"GET"
+            );
+            setProfile(res.data);
+        },
+        onError: () => console.log("Login Failed"),
+    });
+
 
     let navigate = useNavigate();
 
@@ -114,6 +135,20 @@ const Login = ({ user, setUser }) => {
                         </div>
                         <button variant="secondary" type="submit" id="login" disabled={isPending}>Login</button>
                         <button variant="secondary" type="submit" id="reg" disabled={isPending} formAction={register}>Register</button>
+                        <div>
+                            Login with google (pending)
+                            {/*<div class="g-signin2" data-onsuccess="onSignIn"></div>*/}
+                            <GoogleLogin onSuccess={handleSuccess} onError={handleError} />
+                            {profile ? (
+                                <div>
+                                    <img src={profile.picture} alt="User" />
+                                    <h3>{profile.name}</h3>
+                                    <p>{profile.email}</p>
+                                </div>
+                            ) : (
+                                <button onClick={login}>Sign in with Google</button>
+                            )}
+                        </div>
                     </>)
                     :
                     <button variant="secondary" type="button" id="logout" onClick={logout}>Logout</button>
