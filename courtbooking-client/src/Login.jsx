@@ -22,7 +22,9 @@ const Login = ({ user, setUser }) => {
             console.log('tokenResponse',tokenResponse);
             const res = await fetch(
                 `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenResponse.access_token}`);
+            console.log('res.data', res.data, res);
             setProfile(res.data);
+            console.log('res.json()', await res.json());
         },
         onError: () => console.log("Login Failed"),
     });
