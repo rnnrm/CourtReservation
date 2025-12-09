@@ -19,10 +19,9 @@ const Login = ({ user, setUser }) => {
     const [profile, setProfile] = useState(null);
     const login = useGoogleLogin({
         onSuccess: async (tokenResponse) => {
-            console.log(tokenResponse);
-            const res = await post(
-                `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenResponse.access_token}`,null,null,"GET"
-            );
+            console.log('tokenResponse',tokenResponse);
+            const res = await fetch(
+                `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenResponse.access_token}`);
             setProfile(res.data);
         },
         onError: () => console.log("Login Failed"),
@@ -135,10 +134,19 @@ const Login = ({ user, setUser }) => {
                         </div>
                         <button variant="secondary" type="submit" id="login" disabled={isPending}>Login</button>
                         <button variant="secondary" type="submit" id="reg" disabled={isPending} formAction={register}>Register</button>
-                        <div>
+                        
+                    </>)
+                    :
+                    <button variant="secondary" type="button" id="logout" onClick={logout}>Logout</button>
+                }
+                {loginErrorText && <div style={{ color: 'red' }}>{loginErrorText}</div>}
+                <div>{state}</div>
+                <p className="my-3">If you are a member, let a club administrator know your display name after you register so that they can activate your account.</p>
+            </Form>
+            <div>
                             Login with google (pending)
                             {/*<div class="g-signin2" data-onsuccess="onSignIn"></div>*/}
-                            <GoogleLogin onSuccess={handleSuccess} onError={handleError} />
+                            <GoogleLogin style={{ width: "300px", maxWidth: "300px", background:"#202124" }} onSuccess={handleSuccess} onError={handleError} />
                             {profile ? (
                                 <div>
                                     <img src={profile.picture} alt="User" />
@@ -149,14 +157,6 @@ const Login = ({ user, setUser }) => {
                                 <button onClick={login}>Sign in with Google</button>
                             )}
                         </div>
-                    </>)
-                    :
-                    <button variant="secondary" type="button" id="logout" onClick={logout}>Logout</button>
-                }
-                {loginErrorText && <div style={{ color: 'red' }}>{loginErrorText}</div>}
-                <div>{state}</div>
-                <p className="my-3">If you are a member, let a club administrator know your display name after you register so that they can activate your account.</p>
-            </Form>
             {users && user &&
                 <div style={{ height: "400px", overflowY: "scroll" }}>
                     <table className="table table-striped" align="center">

@@ -121,6 +121,7 @@ app.MapControllers();
 
 app.MapFallbackToFile("/index.html");
 app.MapSwagger();//.RequireAuthorization();
+await EnsureDatabaseMigratedAsync(app);
 
 using (var scope = app.Services.CreateScope())
 {
@@ -130,7 +131,8 @@ using (var scope = app.Services.CreateScope())
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
     //context.Database.EnsureCreated();
-    context.Database.Migrate();
+    if (app.Environment.IsDevelopment())
+        context.Database.Migrate();
 
     // Seed datas
     if (!context.Users.Any())
@@ -151,6 +153,55 @@ using (var scope = app.Services.CreateScope())
         await userManager.AddToRoleAsync(user, "Admin");
     }
 }
-;
+
+
+static async Task EnsureDatabaseMigratedAsync(WebApplication app)
+{
+    using var scope = app.Services.CreateScope();
+    var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    var db = services.GetRequiredService<ApplicationDbContext>();
+
+    // If using SQLite with a file path (Data Source=/app/app.db) ensure the directory exists
+    try
+    {
+        var conn = db.Database.GetDbConnection().ConnectionString;
+        if (!string.IsNullOrEmpty(conn) &&
+            conn.StartsWith("Data Source=", StringComparison.OrdinalIgnoreCase))
+        {
+            var path = conn["Data Source=".Length..].Trim();
+            var dir = Path.GetDirectoryName(path);
+            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+        }
+    }
+    catch (Exception ex)
+    {
+        logger.LogWarning(ex, "Failed to ensure SQLite directory exists");
+    }
+
+    // Retry applying migrations a few times while DB becomes available
+    var attempts = 6;
+    for (var attempt = 1; attempt <= attempts; attempt++)
+    {
+        try
+        {
+            db.Database.Migrate();
+            logger.LogInformation("Database migrations applied successfully.");
+            return;
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Database migrate attempt {Attempt}/{Attempts} failed", attempt, attempts);
+            if (attempt == attempts)
+            {
+                logger.LogError(ex, "All attempts to migrate the database have failed.");
+                throw;
+            }
+
+            await Task.Delay(TimeSpan.FromSeconds(5));
+        }
+    }
+}
 
 app.Run();
