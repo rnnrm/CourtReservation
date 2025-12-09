@@ -2,7 +2,7 @@ import { useEffect, useState, useActionState } from 'react';
 import Form from 'react-bootstrap/Form';
 import { post } from './Utility.js';
 import { useNavigate } from "react-router";
-import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
+import { GoogleLogin, useGoogleLogin, hasGrantedAllScopesGoogle } from "@react-oauth/google";
 
 const Login = ({ user, setUser }) => {
     const [loginErrorText, setLoginErrorText] = useState('');
@@ -19,13 +19,21 @@ const Login = ({ user, setUser }) => {
     const [profile, setProfile] = useState(null);
     const login = useGoogleLogin({
         onSuccess: async (tokenResponse) => {
-            console.log('tokenResponse',tokenResponse);
-            const res = await fetch(
+            console.log('tokenResponse', tokenResponse);
+            
+            const res = await fetch(headers: {"cross-origin-opener-policy": "same-origin-allow-popups"},
                 `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenResponse.access_token}`);
-            console.log('res.data', res.data, res);
-            setProfile(res.data);
-            console.log('res.json()', await res.json());
+            if(res.ok)
+                setProfile(await res.json());
+
+            const hasAccess = hasGrantedAllScopesGoogle(
+                tokenResponse,
+                '.../auth/userinfo.profile',
+            );
+            
+            console.log('Has userinfo access:', hasAccess);
         },
+        flow: 'auth-code',
         onError: () => console.log("Login Failed"),
     });
 
