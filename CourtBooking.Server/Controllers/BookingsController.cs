@@ -95,7 +95,7 @@ namespace CourtBooking.Server.Controllers
             if (reservation == null) return BadRequest();
 
             var userEmail = User.FindFirstValue(ClaimTypes.Email);
-            var user = await signInManager.UserManager.FindByEmailAsync(userEmail);
+            var user = await signInManager.UserManager.FindByEmailAsync(userEmail!);
             if (user?.Id != reservation.ExtendedProps.Owner && !User.IsInRole("Admin")) //!User.HasClaim(ClaimTypes.Email, reservation.ExtendedProps.Owner) &&
                 return Unauthorized();
 
@@ -131,7 +131,7 @@ namespace CourtBooking.Server.Controllers
 
             //user must own reservation or be admin
             var userEmail = User.FindFirstValue(ClaimTypes.Email);
-            var user = await signInManager.UserManager.FindByEmailAsync(userEmail);
+            var user = await signInManager.UserManager.FindByEmailAsync(userEmail!);
 
             if (user?.Id != deleteBookingDto.UserId && !User.IsInRole("Admin")) //!User.HasClaim(ClaimTypes.Email, deleteBookingDto.Email) 
                 return Unauthorized();

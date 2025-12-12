@@ -2,41 +2,11 @@ import { useEffect, useState, useActionState } from 'react';
 import Form from 'react-bootstrap/Form';
 import { post } from './Utility.js';
 import { useNavigate } from "react-router";
-import { GoogleLogin, useGoogleLogin, hasGrantedAllScopesGoogle } from "@react-oauth/google";
 
 const Login = ({ user, setUser }) => {
     const [loginErrorText, setLoginErrorText] = useState('');
     const [users, setUsers] = useState();
     const [state, action, isPending] = useActionState(handleLogin, null);
-
-    const handleSuccess = (response) => {
-        console.log("Login Success:", response);
-    };
-
-    const handleError = (r) => {
-        console.log("Login Failed",r);
-    };
-    const [profile, setProfile] = useState(null);
-    const login = useGoogleLogin({
-        onSuccess: async (tokenResponse) => {
-            console.log('tokenResponse', tokenResponse);
-            
-            const res = await fetch(headers: {"cross-origin-opener-policy": "same-origin-allow-popups"},
-                `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenResponse.access_token}`);
-            if(res.ok)
-                setProfile(await res.json());
-
-            const hasAccess = hasGrantedAllScopesGoogle(
-                tokenResponse,
-                '.../auth/userinfo.profile',
-            );
-            
-            console.log('Has userinfo access:', hasAccess);
-        },
-        flow: 'auth-code',
-        onError: () => console.log("Login Failed"),
-    });
-
 
     let navigate = useNavigate();
 
@@ -128,7 +98,7 @@ const Login = ({ user, setUser }) => {
                         <div style={{ display: 'grid', gridTemplateColumns: 'auto' }} >
                             <Form.Group className="mb-3" controlId="formBasicEmail">
                                 <Form.Label>
-                                    <Form.Control name='email' autoComplete='Email' type="email" placeholder="Email" />
+                                    <Form.Control required name='email' autoComplete='Email' type="email" placeholder="Email" />
                                 </Form.Label>
                             </Form.Group>
                             <Form.Group className="mb-3" controlId="formBasicName">
@@ -138,12 +108,22 @@ const Login = ({ user, setUser }) => {
                             </Form.Group>
                             <Form.Group className="mb-3" controlId="formBasicPassword">
                                 <Form.Label>
-                                    <Form.Control name='password' autoComplete="current-password" type="password" placeholder="Password" />
+                                    <Form.Control required name='password' autoComplete="current-password" type="password" placeholder="Password" />
                                 </Form.Label>
                             </Form.Group>
                         </div>
-                        <button variant="secondary" type="submit" id="login" disabled={isPending}>Login</button>
-                        <button variant="secondary" type="submit" id="reg" disabled={isPending} formAction={register}>Register</button>
+                        <div >
+                            <button className="m-1" variant="secondary" type="submit" id="login" disabled={isPending}>
+                                Login
+                            </button>
+                            <button className="m-1" variant="secondary" type="submit" id="reg" disabled={isPending} formAction={register}>
+                                Register
+                            </button>
+                            <br/>
+                            <button className="m-1" id="google" onClick={() => window.location.href = "/api/auth/login-google"} formAction={() => { }}>
+                                Sign in with Google
+                            </button>
+                        </div>
                         
                     </>)
                     :
@@ -153,20 +133,6 @@ const Login = ({ user, setUser }) => {
                 <div>{state}</div>
                 <p className="my-3">If you are a member, let a club administrator know your display name after you register so that they can activate your account.</p>
             </Form>
-            <div>
-                            Login with google (pending)
-                            {/*<div class="g-signin2" data-onsuccess="onSignIn"></div>*/}
-                            <GoogleLogin style={{ width: "300px", maxWidth: "300px", background:"#202124" }} onSuccess={handleSuccess} onError={handleError} />
-                            {profile ? (
-                                <div>
-                                    <img src={profile.picture} alt="User" />
-                                    <h3>{profile.name}</h3>
-                                    <p>{profile.email}</p>
-                                </div>
-                            ) : (
-                                <button onClick={login}>Sign in with Google</button>
-                            )}
-                        </div>
             {users && user &&
                 <div style={{ height: "400px", overflowY: "scroll" }}>
                     <table className="table table-striped" align="center">

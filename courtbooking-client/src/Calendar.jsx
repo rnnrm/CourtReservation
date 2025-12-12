@@ -116,7 +116,7 @@ export default function Calendar({ user, court }) {
                 start: selectInfo.startStr,
                 end: selectInfo.endStr,
                 allDay: selectInfo.allDay,
-                extendedProps: { court: court, owner: user.Id, description: "" },
+                extendedProps: { court: court, owner: user.id, description: "" },
                 backgroundColor: colour
             }, 'backendServerEventSourceId')
         }
@@ -205,19 +205,8 @@ export default function Calendar({ user, court }) {
             eventChange={v => updateData(v, '=')}
             eventRemove={v => updateData(v, '-')}
             contentHeight={500}
-        //selectOverlap={detectConflicts}
+            //selectOverlap={detectConflicts}
             />
-            {user.role === "xxxAdmin" &&
-                <div>   
-                    Recurring reservation
-                    daysOfWeek
-                    startTime
-                    endTime
-                    startRecur
-                    endRecur
-                    groupId
-                </div>
-            }
         </>
     )
 }

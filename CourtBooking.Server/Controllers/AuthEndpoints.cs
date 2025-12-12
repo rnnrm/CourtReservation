@@ -1,9 +1,16 @@
-
 using CourtBooking.Server.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Net.Http;
 using System.Security.Claims;
+using System.Security.Principal;
 
 namespace CourtBooking.Server.Endpoints;
 
@@ -24,7 +31,6 @@ public static class AuthEndpoints
 
             try
             {
-                throw new Exception("test");
                 var user = new AppUser { UserName = request.Name, Email = request.Email, Rank = 0 };
                 var result = await userManager.CreateAsync(user, request.Password!);
                 if (!result.Succeeded)
@@ -67,9 +73,11 @@ public static class AuthEndpoints
             }
         });
 
-        group.MapGet("/logout", [Authorize] async (SignInManager<AppUser> signInManager) =>
+        group.MapGet("/logout", [Authorize] async (HttpContext httpContext, SignInManager<AppUser> signInManager) =>
         {
             await signInManager.SignOutAsync();
+            await httpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+            //await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return Results.Ok();
         });
 
@@ -83,7 +91,7 @@ public static class AuthEndpoints
             if (isAuthenticated)
             {
                 var id = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-                var appuser = await signInManager.UserManager.FindByIdAsync(id);
+                var appuser = await signInManager.UserManager.FindByIdAsync(id!);
                 return Results.Ok(new { name = user.Identity.Name, appuser?.Id, role, appuser?.Rank });
             }
             else
@@ -101,16 +109,115 @@ public static class AuthEndpoints
             return Results.Ok();
         });
 
-        //google id
-        //maybe signin-google does this already
-        group.MapPost("/google", async (UserManager<AppUser> userManager, string Id, string Name) =>
+        group.MapGet("/login-google", async (HttpContext httpContext, string returnUrl = "https://localhost:52293/api/auth/mysignin-google") =>
         {
-            //fetch("google.com/tokenverify?Id=" + Id);
-            //find user by id
-            //if none register user
-            //get display name from gogole account
+            var properties = new AuthenticationProperties { RedirectUri = returnUrl };
+            await httpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, properties);
         });
 
+        group.MapGet("/mysignin-google", async (HttpContext httpContext, SignInManager<AppUser> signInManager, string returnUrl = "/") =>
+        {
+            
+            //var name = User.FindFirstValue(ClaimTypes.Name);
+            var result = await httpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
+            if (!result.Succeeded)
+                return Results.Redirect($"/?error=ExternalAuthFailed");
+            //return Results.Unauthorized();
+
+            var externalUserId = result.Principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var email = result.Principal.FindFirst(ClaimTypes.Email)?.Value;
+            var name = result.Principal.FindFirst(ClaimTypes.Name)?.Value;
+            var user = await signInManager.UserManager.FindByLoginAsync("Google", externalUserId!);
+            if (user == null && email != null)
+            {
+                user = await signInManager.UserManager.FindByEmailAsync(email);
+                if (user == null)
+                {
+                    user = new AppUser { Id = externalUserId, UserName = name ?? email, Email = email, Rank = 0 };
+                    await signInManager.UserManager.CreateAsync(user);
+                }
+                await signInManager.UserManager.AddLoginAsync(user, new UserLoginInfo("Google", externalUserId, "Google"));
+            }
+            if (user != null)
+            {
+                await signInManager.SignInAsync(user, isPersistent: true);
+                await httpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+                //return Results.Ok(new { user.Id, name = user.UserName, role = "Member", user.Rank });
+                return Results.Redirect(returnUrl);
+            }
+            //return Results.Unauthorized();
+            return Results.Redirect($"/?error=CreateFailed");
+            //return Results.Redirect(returnUrl);
+        });
+
+        /* group.MapGet("/mysignin-google", async (HttpContext httpContext, SignInManager<AppUser> signInManager, string returnUrl = "/") =>
+         {
+             // Use SignInManager helpers to read the external cookie and sign in or create local user.
+             var info = await signInManager.GetExternalLoginInfoAsync();
+             if (info == null)
+                 return Results.Redirect($"/?error=ExternalAuthFailed");
+
+             var signInResult = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: true);
+             if (signInResult.Succeeded)
+             {
+                 await httpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+                 return Results.Redirect(returnUrl);
+             }
+
+             var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+             var name = info.Principal.FindFirstValue(ClaimTypes.Name) ?? email ?? info.ProviderKey;
+             var externalUserId = info.Principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+             var user = email != null ? await signInManager.UserManager.FindByEmailAsync(email) : null;
+             if (user == null)
+             {
+                 user = new AppUser { Id = externalUserId, UserName = name, Email = email, Rank = 0 };
+                 var createRes = await signInManager.UserManager.CreateAsync(user);
+                 if (!createRes.Succeeded)
+                     return Results.Redirect($"/?error=CreateFailed");
+             }
+
+             await signInManager.UserManager.AddLoginAsync(user, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
+             await signInManager.SignInAsync(user, isPersistent: true);
+             await httpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+             return Results.Redirect(returnUrl);
+         });*/
+
+        /*        group.MapGet("/login-facebook", async (HttpContext httpContext, string returnUrl = "/") =>
+                {
+                    var properties = new AuthenticationProperties { RedirectUri = returnUrl };
+                    await httpContext.ChallengeAsync(FacebookDefaults.AuthenticationScheme, properties);
+                    //return Challenge(properties, "Facebook");
+                });*/
+
+        /*
+                group.MapGet("/signin-facebook", async (HttpContext httpContext, SignInManager<AppUser> signInManager) =>
+                {
+                    var result = await httpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
+                    if (!result.Succeeded)
+                        return Results.Unauthorized();
+                    var externalUserId = result.Principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    var email = result.Principal.FindFirst(ClaimTypes.Email)?.Value;
+                    var name = result.Principal.FindFirst(ClaimTypes.Name)?.Value;
+                    var user = await signInManager.UserManager.FindByLoginAsync("Facebook", externalUserId);
+                    if (user == null && email != null)
+                    {
+                        user = await signInManager.UserManager.FindByEmailAsync(email);
+                        if (user == null)
+                        {
+                            user = new AppUser { UserName = name ?? email, Email = email, Rank = 0 };
+                            await signInManager.UserManager.CreateAsync(user);
+                        }
+                        await signInManager.UserManager.AddLoginAsync(user, new UserLoginInfo("Facebook", externalUserId, "Facebook"));
+                    }
+                    if (user != null)
+                    {
+                        await signInManager.SignInAsync(user, isPersistent: true);
+                        await httpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+                        return Results.Ok(new { user.Id, name = user.UserName, role = "Member", user.Rank });
+                    }
+                    return Results.Unauthorized();
+                });
+        */
         return app;
     }
 }

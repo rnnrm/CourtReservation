@@ -1,9 +1,11 @@
 using CourtBooking.Server;
 using CourtBooking.Server.Endpoints;
 using CourtBooking.Server.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 // TODO: migrate databse updates (automatically on deploy? when not to)
 // TODO: merge deploy without overwriting database
@@ -35,11 +37,51 @@ builder.Services.AddDbContext<ApplicationDbContext>(
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+builder.Services.AddAuthentication()
+/*    options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+})
+.AddCookie()*/
+.AddGoogle(googleOptions =>
 {
     googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
     googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+
+    googleOptions.CallbackPath = "/api/auth/signin-google";
+    googleOptions.SignInScheme = IdentityConstants.ExternalScheme;
+
+    // Ensure correlation/nonce cookies survive the cross-site redirect back from Google
+    //googleOptions.CorrelationCookie.SameSite = SameSiteMode.None;
+    //googleOptions.NonceCookie.SameSite = SameSiteMode.None;
+    //googleOptions.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
+    //googleOptions.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
+
+    googleOptions.Scope.Add("profile");
+    googleOptions.Scope.Add("email");
+    googleOptions.SaveTokens = true;
+   /* googleOptions.Events.OnCreatingTicket = ctx =>
+    {
+        var identity = (ClaimsIdentity)ctx.Principal.Identity;
+        var profilePic = ctx.User.GetProperty("picture").GetString();
+        var email = ctx.User.GetProperty("email").GetString();
+        var name = ctx.User.GetProperty("name").GetString();
+        // Add claims
+        identity.AddClaim(new Claim("profilePic", profilePic));
+        identity.AddClaim(new Claim(ClaimTypes.Email, email));
+        identity.AddClaim(new Claim(ClaimTypes.Name, name));
+        return Task.CompletedTask;
+    };*/
 });
+/*builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+    options.CheckConsentNeeded = context => true;
+    options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
+});*/
 builder.Services.AddAuthorization();
 builder.Services.AddIdentity<AppUser, IdentityRole>(cfg =>
 {
@@ -58,7 +100,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(cfg =>
 //builder.AddSignInManager<SignInManager<AppUser>>();
 //builder.Services.TryAddScoped<SignInManager<AppUser>>();
 
-builder.Services.ConfigureApplicationCookie(options =>
+/*builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Events.OnRedirectToLogin = ctx =>
     {
@@ -83,7 +125,7 @@ builder.Services.ConfigureApplicationCookie(options =>
         ctx.Response.Redirect(ctx.RedirectUri);
         return Task.CompletedTask;
     };
-});
+});*/
 
 builder.Services.AddCors(options =>
 {
