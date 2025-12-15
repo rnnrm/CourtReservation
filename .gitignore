@@ -86,3 +86,5 @@ coverage-final.json
 bin/
 CourtBooking.Server/obj/
 CourtBooking.Server/bin/
+/CourtBooking.Server/app.db-shm
+/CourtBooking.Server/app.db-wal
