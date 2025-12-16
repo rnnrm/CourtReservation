@@ -54,7 +54,7 @@ export default function Calendar({ user, court }) {
 
     const updateData = (data, action) => {
 
-        if (data.event.extendedProps.owner !== user.Id &&
+        if (data.event.extendedProps.owner !== user.id &&
             user.role !== "Admin") return; // only allow owner to modify booking
 
         let booking = {
@@ -124,13 +124,13 @@ export default function Calendar({ user, court }) {
 
     function handleAllowSelect(eventInfo) {
         //console.log('handleAllowSelect',eventInfo.event.extendedProps.owner, user.Id);
-        if (eventInfo.event.extendedProps.owner !== user.Id &&
+        if (eventInfo.event.extendedProps.owner !== user.id &&
             user.role !== "Admin") return false; // only allow owner to modify booking)
         return true;
     }
     function handleEventAllow(dropInfo, draggedEvent) {
         //console.log('handleEventAllow ', draggedEvent, dropInfo);
-        if (draggedEvent.extendedProps.owner !== user.Id &&
+        if (draggedEvent.extendedProps.owner !== user.id &&
             user.role !== "Admin") return false; // only allow owner to modify booking)
         return true;
     }
@@ -140,7 +140,7 @@ export default function Calendar({ user, court }) {
             return handleDateSelect(eventInfo);
 
         // only allow owner or admin to delete booking or if its a guest reservation
-        if (user && (eventInfo.event.extendedProps.owner === user?.Id
+        if (user && (eventInfo.event.extendedProps.owner === user?.id
             || user?.role === "Admin"
             //|| isGuestReservation(eventInfo.event)  && user?.role !== "Guest")
         )) {

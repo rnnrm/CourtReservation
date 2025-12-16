@@ -109,13 +109,14 @@ public static class AuthEndpoints
             return Results.Ok();
         });
 
-        group.MapGet("/login-google", async (HttpContext httpContext, string returnUrl = "https://localhost:52293/api/auth/mysignin-google") =>
+        group.MapGet("/login-google", async (IConfiguration config, HttpContext httpContext) =>
         {
-            var properties = new AuthenticationProperties { RedirectUri = returnUrl };
+            string redirectUri = config["FRONTEND_URL"] + "/api/auth/signin-google-callback";
+            var properties = new AuthenticationProperties { RedirectUri = redirectUri };
             await httpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, properties);
         });
 
-        group.MapGet("/mysignin-google", async (HttpContext httpContext, SignInManager<AppUser> signInManager, string returnUrl = "/") =>
+        group.MapGet("/signin-google-callback", async (HttpContext httpContext, SignInManager<AppUser> signInManager, string redirectUri = "/") =>
         {
             
             //var name = User.FindFirstValue(ClaimTypes.Name);
@@ -124,10 +125,10 @@ public static class AuthEndpoints
                 return Results.Redirect($"/?error=ExternalAuthFailed");
             //return Results.Unauthorized();
 
-            var externalUserId = result.Principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var externalUserId = result.Principal.FindFirst(ClaimTypes.NameIdentifier)?.Value!;
             var email = result.Principal.FindFirst(ClaimTypes.Email)?.Value;
             var name = result.Principal.FindFirst(ClaimTypes.Name)?.Value;
-            var user = await signInManager.UserManager.FindByLoginAsync("Google", externalUserId!);
+            var user = await signInManager.UserManager.FindByLoginAsync("Google", externalUserId);
             if (user == null && email != null)
             {
                 user = await signInManager.UserManager.FindByEmailAsync(email);
@@ -143,7 +144,7 @@ public static class AuthEndpoints
                 await signInManager.SignInAsync(user, isPersistent: true);
                 await httpContext.SignOutAsync(IdentityConstants.ExternalScheme);
                 //return Results.Ok(new { user.Id, name = user.UserName, role = "Member", user.Rank });
-                return Results.Redirect(returnUrl);
+                return Results.Redirect(redirectUri);
             }
             //return Results.Unauthorized();
             return Results.Redirect($"/?error=CreateFailed");

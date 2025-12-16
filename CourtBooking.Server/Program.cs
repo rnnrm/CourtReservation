@@ -18,6 +18,7 @@ using Microsoft.Extensions.Options;
 // TODO: env variables for connection strings, secrets, page config
 // TODO: validate match form
 // TODO: set owner id to id not email on old records?
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -48,10 +49,10 @@ builder.Services.AddAuthentication()
 .AddCookie()*/
 .AddGoogle(googleOptions =>
 {
-    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-    googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
+    googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
 
-    googleOptions.CallbackPath = "/api/auth/signin-google";
+    googleOptions.CallbackPath = builder.Configuration["FRONTEND_URL"] + "/api/auth/signin-google";
     googleOptions.SignInScheme = IdentityConstants.ExternalScheme;
 
     // Ensure correlation/nonce cookies survive the cross-site redirect back from Google
@@ -131,7 +132,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowVercel", policy =>
     {
-        policy.WithOrigins("https://kenrho.vercel.app") // <-- replace with your Vercel URL
+        policy.WithOrigins("https://kenrho.vercel.app")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -141,7 +142,7 @@ var app = builder.Build();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
-// Add before app.UseAuthentication(); and after app.UseStaticFiles();
+
 app.UseCors("AllowVercel");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
