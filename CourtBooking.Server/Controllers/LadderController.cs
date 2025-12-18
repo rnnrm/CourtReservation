@@ -147,8 +147,6 @@ namespace CourtBooking.Server.Controllers
             }
 
 
-            return Ok();
-
         }
     }
 }

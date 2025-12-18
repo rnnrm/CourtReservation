@@ -18,5 +18,9 @@
     </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
+    <None Include="google_client_id.txt" />
+    <None Include="secrets\certificate_password.txt" />
+    <None Include="secrets\google_client_id.txt" />
+    <None Include="secrets\google_client_secret.txt" />
   </ItemGroup>
 </Project>

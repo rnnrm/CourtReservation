@@ -8,12 +8,25 @@ services:
       dockerfile: CourtBooking.Server/Dockerfile
     volumes:
       - ./data:/app
+      -  "${CERTIFICATE_PATH}/spitfire.pfx:/https/spitfire.pfx:ro"
     ports:
       - "32771:8081"  # HostPort:ContainerPort (8081 is your container's HTTPS port)
-      #- "5002:8080"   # Optional: HTTP
+      - "5002:8080"   # Optional: HTTP
     environment:
-      - ASPNETCORE_HTTPS_PORTS=8081
-      #- ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
       - ASPNETCORE_URLS=${ASPNETCORE_URLS}
       - DB_CONNECTION_STRING=${DB_CONNECTION_STRING}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/spitfire.pfx
+    secrets:
+      - google_client_id
+      - google_client_secret
+      - source: certificate_password
+        target: Kestrel__Certificates__Default__Password
+
+secrets:
+  google_client_id:
+    file: ./secrets/google_client_id.txt
+  google_client_secret:
+    file: ./secrets/google_client_secret.txt
+  certificate_password:
+    file: ./secrets/certificate_password.txt
