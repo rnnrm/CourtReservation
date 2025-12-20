@@ -8,12 +8,12 @@ import Calendar from "./Calendar.jsx";
 const Reservations = ({ user }) => {
 
 
-    const [key, setKey] = useState(1);
+    const [key, setKey] = useState(5);
 
     return (
         <>
             <Tabs
-                defaultActiveKey="5"
+                defaultActiveKey={5}
                 id="uncontrolled-tab-example"
                 className="mb-3 mt-5"
                 activeKey={key}
