@@ -13,7 +13,7 @@ const Reservations = ({ user }) => {
     return (
         <>
             <Tabs
-                defaultActiveKey="1"
+                defaultActiveKey="5"
                 id="uncontrolled-tab-example"
                 className="mb-3 mt-5"
                 activeKey={key}
