@@ -171,7 +171,8 @@ export default function Calendar({ user, court }) {
 
     return (
         <>
-        <FullCalendar
+            <FullCalendar
+            themeSystem='bootstrap5'
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
             initialView="timeGridWeek"
             //events={events}

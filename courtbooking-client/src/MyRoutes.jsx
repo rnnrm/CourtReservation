@@ -7,8 +7,7 @@ import {
 import Login from './Login.jsx';
 import Reservations from './Reservations.jsx';
 import Ladder from './Ladder.jsx';
-import App from './App.jsx'
-import { post } from './Utility.js';
+import App from './App.jsx';
 
 const MyRoutes = () => {
     const [user, setUser] = useState(null);

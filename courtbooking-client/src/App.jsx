@@ -8,7 +8,6 @@ import Offcanvas from 'react-bootstrap/Offcanvas';
 import Alert from 'react-bootstrap/Alert';
 import { Link } from 'react-router-dom';
 import { Outlet } from "react-router";
-import { useEffect, useState } from 'react';
 
 function App({offline}) {
     let expand = 'md';

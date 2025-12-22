@@ -153,14 +153,14 @@ const Ladder = ({ user }) => {
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <button variant="secondary" onClick={handleClose}>
+                    <Button variant="secondary" onClick={handleClose}>
                         Cancel
-                    </button>
-                    <button variant="primary" type="submit"
+                    </Button>
+                    <Button variant="primary" type="submit"
                         disabled={isPending || !opponent || (score[0] === score[1])}
                         onClick={logMatch}>
                         Submit Match
-                    </button>
+                    </Button>
                 </Modal.Footer>
             </Modal>
 
@@ -169,7 +169,7 @@ const Ladder = ({ user }) => {
             {user?.role === ("Member") &&
                 <>
                 <p>
-                    <button onClick={handleShow}>Record match result</button>                    
+                    <Button onClick={handleShow}>Record match result</Button>
                 </p>
                 <p>
                     {matchStatus}

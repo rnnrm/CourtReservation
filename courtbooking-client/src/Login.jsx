@@ -2,6 +2,7 @@ import { useEffect, useState, useActionState } from 'react';
 import Form from 'react-bootstrap/Form';
 import { post } from './Utility.js';
 import { useNavigate } from "react-router";
+import Button from 'react-bootstrap/Button';
 
 const Login = ({ user, setUser }) => {
     const [loginErrorText, setLoginErrorText] = useState('');
@@ -84,7 +85,7 @@ const Login = ({ user, setUser }) => {
         if (response.ok) {
             response = await response.json();
             setUser(response)
-            setLoginErrorText('Logged in');
+            setLoginErrorText('Logged in as ' + response.name);
             navigate("/reservations");
         }
     }
@@ -113,21 +114,21 @@ const Login = ({ user, setUser }) => {
                             </Form.Group>
                         </div>
                         <div >
-                            <button className="m-1" variant="secondary" type="submit" id="login" disabled={isPending}>
+                            <Button className="m-1" variant="secondary" type="submit" id="login" disabled={isPending}>
                                 Login
-                            </button>
-                            <button className="m-1" variant="secondary" type="submit" id="reg" disabled={isPending} formAction={register}>
+                            </Button>
+                            <Button className="m-1" variant="secondary" type="submit" id="reg" disabled={isPending} formAction={register}>
                                 Register
-                            </button>
+                            </Button>
                             <br/>
-                            <button className="m-1" id="google" onClick={() => window.location.href = "/api/auth/login-google"} formAction={() => { }}>
+                            <Button className="m-1" id="google" onClick={() => window.location.href = "/api/auth/login-google"} type="submit" formAction={() => { }}>
                                 Sign in with Google
-                            </button>
+                            </Button>
                         </div>
                         
                     </>)
                     :
-                    <button variant="secondary" type="button" id="logout" onClick={logout}>Logout</button>
+                    <Button variant="secondary" type="button" id="logout" onClick={logout}>Logout</Button>
                 }
                 {loginErrorText && <div style={{ color: 'red' }}>{loginErrorText}</div>}
                 <div>{state}</div>

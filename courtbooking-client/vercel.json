@@ -3,6 +3,11 @@
     {
       "source": "/api/:path*",
       "destination": "https://spitfire.webredirect.org:32771/api/:path*"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/index.html"
     }
   ]
 }
+
