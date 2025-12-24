@@ -120,10 +120,10 @@ const Login = ({ user, setUser }) => {
                             <Button className="m-1" variant="secondary" type="submit" id="reg" disabled={isPending} formAction={register}>
                                 Register
                             </Button>
-                            <br/>
+                            {/*<br/>
                             <Button className="m-1" id="google" onClick={() => window.location.href = "/api/auth/login-google"} type="submit" formAction={() => { }}>
                                 Sign in with Google
-                            </Button>
+                            </Button>*/}
                         </div>
                         
                     </>)
