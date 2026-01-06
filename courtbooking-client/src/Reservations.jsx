@@ -4,6 +4,7 @@ import Tabs from 'react-bootstrap/Tabs';
 import Badge from 'react-bootstrap/Badge';
 import Stack from 'react-bootstrap/Stack';
 import Calendar from "./Calendar.jsx";
+let numCourts = Number(import.meta.env.VITE_NUM_COURTS);
 
 const Reservations = ({ user }) => {
 
@@ -13,36 +14,22 @@ const Reservations = ({ user }) => {
     return (
         <>
             <Tabs
-                defaultActiveKey={5}
+                defaultActiveKey={Number(import.meta.env["VITE_DEFAULT_COURT"]) }
                 id="uncontrolled-tab-example"
                 className="mb-3 mt-5"
                 activeKey={key}
                 onSelect={(k) => setKey(k)}
             >
-                <Tab eventKey={1} title="Court 1">
-                    <h2>Lower left court</h2>
-                    <Calendar key={1} user={user} court={1} />
-                </Tab>
-                <Tab eventKey={2} title="Court 2">
-                    <h2>Lower right court</h2>
-                    <Calendar key={2} user={user} court={2} />
-                </Tab>
-                <Tab eventKey={3} title="Court 3">
-                    <h2>Middle left court</h2>
-                    <Calendar key={3} user={user} court={3} />
-                </Tab>
-                <Tab eventKey={4} title="Court 4">
-                    <h2>Middle right court</h2>
-                    <Calendar key={4} user={user} court={4} />
-                </Tab>
-                <Tab eventKey={5} title="Court 5">
-                    <h2>Upper left court</h2>
-                    <Calendar key={5} user={user} court={5} />
-                </Tab>
-                <Tab eventKey={6} title="Court 6">
-                    <h2>Upper right court</h2>
-                    <Calendar key={6} user={user} court={6} />
-                </Tab>
+                {[...Array(numCourts)].map((x, i) => {
+                    let title = import.meta.env[`VITE_COURT_TITLE${i + 1}`];
+                    let description = import.meta.env[`VITE_COURT_DESCRIPTION${i + 1}`];
+                    return (
+                        <Tab eventKey={i + 1} title={title} key={i + 1}>
+                            <h2>{description}</h2>
+                            <Calendar user={user} court={i + 1} />
+                        </Tab>
+                    );
+                })}
             </Tabs>
             <Stack direction="horizontal" gap={2} className="me-auto">
                 <Badge bg="info" className="ms-auto">Member</Badge>
@@ -53,7 +40,6 @@ const Reservations = ({ user }) => {
             </Stack>
             <p>Long press a time slot to create/move/resize a reservation</p>
         </>);
-
 };
 
 export default Reservations;
