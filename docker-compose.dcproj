@@ -20,6 +20,7 @@
     <None Include=".dockerignore" />
     <None Include="google_client_id.txt" />
     <None Include="example.env" />
+    <None Include="README.md" />
     <None Include="secrets\certificate_password.txt" />
     <None Include="secrets\google_client_id.txt" />
     <None Include="secrets\google_client_secret.txt" />
