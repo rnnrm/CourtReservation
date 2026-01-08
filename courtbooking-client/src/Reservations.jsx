@@ -27,7 +27,7 @@ const Reservations = ({ user }) => {
                         <Tab eventKey={i + 1} title={title} key={i + 1}>
                             <h2>{description}</h2>
                             <Calendar user={user} court={i + 1} />
-                        </Tab>
+                </Tab>
                     );
                 })}
             </Tabs>
@@ -40,6 +40,7 @@ const Reservations = ({ user }) => {
             </Stack>
             <p>Long press a time slot to create/move/resize a reservation</p>
         </>);
+
 };
 
 export default Reservations;
