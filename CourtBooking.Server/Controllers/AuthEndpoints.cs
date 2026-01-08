@@ -60,15 +60,19 @@ public static class AuthEndpoints
                 if (!await userManager.CheckPasswordAsync(user, request.Password))
                     return Results.ValidationProblem(new Dictionary<string, string[]> { ["Credentials"] = ["Invalid credentials."] });
 
-                // userManager.GetRolesAsync(user);
                 await signInManager.SignInAsync(user, isPersistent: true);
-                //var userRole = signInManager.Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
                 var role = signInManager.Context.User.IsInRole("Admin") ? "Admin" : signInManager.Context.User.IsInRole("Member") ? "Member" : "Guest";
-                return Results.Ok(new { user.Id, name = user.UserName, role, user.Rank });
+                return Results.Ok(new { 
+                    user.Id, 
+                    name = user.UserName, 
+                    role, 
+                    user.Rank,
+                    user.MemberNumber
+                    });
             }
             catch (Exception e)
             {
-                Console.WriteLine("e.Message " + e.Message);
+                Console.WriteLine("exception at /login: " + e.Message);
                 return Results.Problem(e.Message);
             }
         });
@@ -111,14 +115,14 @@ public static class AuthEndpoints
 
         group.MapGet("/login-google", async (IConfiguration config, HttpContext httpContext) =>
         {
-            string redirectUri = config["FRONTEND_URL"] + "/api/auth/signin-google-callback";
+            string redirectUri = config["FRONTEND_URL"] + ":32771/api/auth/signin-google-callback";
             var properties = new AuthenticationProperties { RedirectUri = redirectUri };
             await httpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, properties);
         });
 
         group.MapGet("/signin-google-callback", async (HttpContext httpContext, SignInManager<AppUser> signInManager, string redirectUri = "/") =>
         {
-            
+
             //var name = User.FindFirstValue(ClaimTypes.Name);
             var result = await httpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
             if (!result.Succeeded)

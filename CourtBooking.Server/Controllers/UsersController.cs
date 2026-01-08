@@ -10,7 +10,7 @@ using static CourtBooking.Server.Controllers.BookingsController;
 
 namespace CourtBooking.Server.Controllers
 {
-    public record UserRolesViewModel(string Name, string Id, string[] Roles, int Rank);
+    public record UserViewModel(string Name, string Id, string[] Roles, int Rank, int? MemberNumber);
 
     [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
@@ -27,22 +27,23 @@ namespace CourtBooking.Server.Controllers
         }
 
         //get all users
-        // GET: api/<Users>
+        // GET: api/Users
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult<Dictionary<string, UserRolesViewModel>>> Get()
+        public async Task<ActionResult<Dictionary<string, UserViewModel>>> Get()
         {
             var users = await _userManager.Users.ToListAsync();
 
-            var list = new List<UserRolesViewModel>();
+            var list = new List<UserViewModel>();
             foreach (var u in users)
             {
                 var roles = await _userManager.GetRolesAsync(u);
-                list.Add(new UserRolesViewModel(
+                list.Add(new UserViewModel(
                     u.UserName ?? string.Empty,
                     u.Id ?? string.Empty,
                     roles?.ToArray() ?? Array.Empty<string>(),
-                    u.Rank
+                    u.Rank,
+                    u.MemberNumber
                 ));
             }
 
@@ -101,6 +102,12 @@ namespace CourtBooking.Server.Controllers
                                               .MaxAsync(u => (int?)u.Rank) ?? 0;
 
                         currentUser.Rank = maxRank + 1;
+                        //generate member number
+                        if (currentUser.MemberNumber==null) 
+                        { 
+                            var MaxMemberNumber = await db.Users.MaxAsync(u => (int?)u.MemberNumber) ?? 0;
+                            currentUser.MemberNumber = MaxMemberNumber + 1;
+                        }
                     }
                     else
                     {
@@ -114,7 +121,7 @@ namespace CourtBooking.Server.Controllers
             return roleresult.Succeeded ? Ok() : Problem(roleresult.Errors.ToString());
         }
 
-        // DELETE api/<Users>
+        // DELETE api/Users
         [HttpDelete]
         public async Task<IActionResult> Delete([FromServices] ApplicationDbContext db, [FromBody] string Id)
         {

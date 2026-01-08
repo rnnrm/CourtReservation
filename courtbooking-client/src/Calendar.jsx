@@ -136,8 +136,8 @@ export default function Calendar({ user, court }) {
     }
 
     function handleEventClick(eventInfo) {
-        if (isGuestReservation(eventInfo.event) && user?.role !== "Guest")
-            return handleDateSelect(eventInfo);
+        //if (isGuestReservation(eventInfo.event) && user?.role !== "Guest")
+        //    return handleDateSelect(eventInfo);
 
         // only allow owner or admin to delete booking or if its a guest reservation
         if (user && (eventInfo.event.extendedProps.owner === user?.id
@@ -172,6 +172,7 @@ export default function Calendar({ user, court }) {
     return (
         <>
             <FullCalendar
+            timeZone='UTC'
             themeSystem='bootstrap5'
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
             initialView="timeGridWeek"

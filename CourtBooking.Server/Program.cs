@@ -57,8 +57,7 @@ builder.Services.AddAuthentication()
 {
     googleOptions.ClientId = builder.Configuration["google_client_id"]!;
     googleOptions.ClientSecret = builder.Configuration["google_client_secret"]!;
-
-    googleOptions.CallbackPath = "/api/auth/signin-google";
+    googleOptions.CallbackPath = builder.Configuration["GOOGLE_CALLBACK"];
     googleOptions.SignInScheme = IdentityConstants.ExternalScheme;
 
     // Ensure correlation/nonce cookies survive the cross-site redirect back from Google
@@ -98,6 +97,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(cfg =>
     cfg.Password.RequireUppercase = false;
     cfg.Password.RequireLowercase = false;
     cfg.User.RequireUniqueEmail = true;
+    cfg.User.AllowedUserNameCharacters += ' ';
 })
 //builder.Services.AddIdentityApiEndpoints<IdentityUser>()
 //builder.Services.AddIdentityApiEndpoints<AppUser>() //AppUser, IdentityRole

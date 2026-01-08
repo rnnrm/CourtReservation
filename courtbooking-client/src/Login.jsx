@@ -25,7 +25,7 @@ const Login = ({ user, setUser }) => {
     }, [user]);
 
     const deleteUser = async (id) => {
-        let result = await post('api/Users', { Id: id }, null, "DELETE");
+        let result = await post('api/Users', id, null, "DELETE");
         if (result.ok)
             getUsers();
     }
@@ -141,6 +141,7 @@ const Login = ({ user, setUser }) => {
                             <tr><th>Username</th>
                                 <th>Member</th>
                                 <th>Admin</th>
+                                <th>Membership #</th>
                                 <th>Remove</th>
                             </tr>
 
@@ -180,6 +181,9 @@ const Login = ({ user, setUser }) => {
                                                 }); updateMembership(thisUser.id, "Admin");
                                             }}
                                         />
+                                    </td>
+                                    <td>
+                                        {thisUser.memberNumber}
                                     </td>
                                     <td>
                                         <input type="button"
