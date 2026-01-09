@@ -20,6 +20,20 @@ namespace CourtBooking.Server.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
+        private void RemoveRank(AppUser user)
+        {
+            var userRank = user.Rank;
+            if (userRank > 0)
+            {
+                var usersToUpdate = _userManager.Users.Where(u => u.Rank > userRank).ToList();
+                foreach (var u in usersToUpdate)
+                {
+                    u.Rank -= 1;
+                }
+            }
+            user.Rank = 0;
+        }
+
         public UsersController([FromServices] UserManager<AppUser> userManager, [FromServices] RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
@@ -78,7 +92,7 @@ namespace CourtBooking.Server.Controllers
                 roleresult = await _userManager.RemoveFromRoleAsync(currentUser!, p.Role);
                 if (p.Role == "Member")
                 {
-                    currentUser.Rank = 0;
+                    RemoveRank(currentUser);
                     await _userManager.UpdateAsync(currentUser);
                 }
             }
@@ -128,6 +142,8 @@ namespace CourtBooking.Server.Controllers
             var user = await _userManager.FindByIdAsync(Id);
             if (user != null)
             {
+                RemoveRank(user);
+
                 //delete users reservaions
                 db.RemoveRange(db.Reservations.Where(r => r.ExtendedProps.Owner == user.Id));
 
