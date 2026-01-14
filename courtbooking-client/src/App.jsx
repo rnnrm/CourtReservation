@@ -3,6 +3,9 @@ import './App.css';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
+
+import NavDropdown from 'react-bootstrap/NavDropdown';
+
 import Alert from 'react-bootstrap/Alert';
 import { Link } from 'react-router-dom';
 import { Outlet } from "react-router";
@@ -38,20 +41,22 @@ function App({ offline }) {
                                 <Nav.Link eventKey="/" as={Link} to="/">Account</Nav.Link>
                             <Nav.Link eventKey="/reservations" as={Link} to="/reservations">Book court</Nav.Link>
 
-                            <Nav.Link eventKey="/ladder" as={Link} to="/ladder">Ladder</Nav.Link>
-                                {/*<NavDropdown*/}
-                                {/*    title="Ladder"*/}
-                                {/*    id={`offcanvasNavbarDropdown-expand-${expand}`}*/}
-                                {/*>*/}
-                                {/*    <NavDropdown.Item eventKey="/ladder" as={Link} to="/ladder/singles">Singles ladder</NavDropdown.Item>*/}
-                                {/*    <NavDropdown.Item as={Link} to="/ladder/doubles">*/}
-                                {/*        Doubles ladder*/}
-                                {/*    </NavDropdown.Item>*/}
-                                {/*    <NavDropdown.Divider />*/}
-                                {/*    <NavDropdown.Item href="#action5">*/}
-                                {/*        Tournament*/}
-                                {/*    </NavDropdown.Item>*/}
-                                {/*</NavDropdown>*/}
+                            <NavDropdown
+                                title="Ladder"
+                                id={`offcanvasNavbarDropdown-expand-md`}
+                                drop="down"
+
+                                align="end"
+                            >
+                                <NavDropdown.Item eventKey="Singles" as={Link} to="/ladder/Singles Ladder">Singles</NavDropdown.Item>
+                                <NavDropdown.Item eventKey="Doubles" as={Link} to="/ladder/Doubles Ladder">
+                                    Doubles
+                                </NavDropdown.Item>
+                                {/*<NavDropdown.Divider />
+                                <NavDropdown.Item href="#action5">
+                                    Tournament
+                                </NavDropdown.Item>*/}
+                            </NavDropdown>
                             </Nav>
                             {/*<Form className="d-flex">*/}
                             {/*    <Form.Control*/}
@@ -75,7 +80,7 @@ function App({ offline }) {
                             {(!navigator.onLine) ?
                                 'You are currently offline. Please check your connection and refresh.'
                             :
-                                'Server is offline.'
+                                'Server is offline. Please try again later.'
                             }
                         </p>
                     </Alert>

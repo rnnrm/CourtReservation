@@ -39,7 +39,7 @@ const MyRoutes = () => {
             <Route path="/" element={<App offline={offline} />}>
                 <Route index element={<Login className={{ padding: "2rem" }} user={user} setUser={setUser} />} />
                 <Route path="/reservations" element={<Reservations user={user} />} />
-                <Route path="/ladder/*" element={<Ladder user={user} />} />
+                <Route path="/ladder/:competitionName" element={<Ladder user={user} />} />
             </Route>
         </Routes >
     );

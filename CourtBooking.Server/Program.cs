@@ -195,8 +195,7 @@ using (var scope = app.Services.CreateScope())
         var user = new AppUser
         {
             UserName = "ClubAdmin",
-            Email = "aa@aa.aa",
-            Rank = 999
+            Email = "aa@aa.aa"
         };
         await userManager.CreateAsync(user, "p@staW0rd!");
         await userManager.AddToRoleAsync(user, "Admin");

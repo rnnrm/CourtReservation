@@ -3,6 +3,7 @@ using System;
 using CourtBooking.Server;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,27 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CourtBooking.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260110213440_Competitors")]
+    partial class Competitors
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.20");
-
-            modelBuilder.Entity("CompetitorPlayers", b =>
-                {
-                    b.Property<string>("CompetitorId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("AppUserId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("CompetitorId", "AppUserId");
-
-                    b.HasIndex("AppUserId");
-
-                    b.ToTable("CompetitorPlayers", (string)null);
-                });
 
             modelBuilder.Entity("CourtBooking.Server.Models.AppUser", b =>
                 {
@@ -39,6 +27,9 @@ namespace CourtBooking.Server.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("CompetitorId")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -88,6 +79,8 @@ namespace CourtBooking.Server.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CompetitorId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -145,7 +138,7 @@ namespace CourtBooking.Server.Migrations
                     b.Property<double>("PointsChange")
                         .HasColumnType("REAL");
 
-                    b.Property<string>("ReportedById")
+                    b.Property<string>("ReportedBy")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -160,8 +153,6 @@ namespace CourtBooking.Server.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("LoserId");
-
-                    b.HasIndex("ReportedById");
 
                     b.HasIndex("WinnerId");
 
@@ -328,21 +319,11 @@ namespace CourtBooking.Server.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("CompetitorPlayers", b =>
+            modelBuilder.Entity("CourtBooking.Server.Models.AppUser", b =>
                 {
-                    b.HasOne("CourtBooking.Server.Models.AppUser", null)
-                        .WithMany()
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_CompetitorPlayers_AspNetUsers_AppUserId");
-
                     b.HasOne("CourtBooking.Server.Models.Competitor", null)
-                        .WithMany()
-                        .HasForeignKey("CompetitorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_CompetitorPlayers_Competitors_CompetitorId");
+                        .WithMany("Players")
+                        .HasForeignKey("CompetitorId");
                 });
 
             modelBuilder.Entity("CourtBooking.Server.Models.MatchResult", b =>
@@ -353,12 +334,6 @@ namespace CourtBooking.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CourtBooking.Server.Models.Competitor", "ReportedBy")
-                        .WithMany()
-                        .HasForeignKey("ReportedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("CourtBooking.Server.Models.Competitor", "Winner")
                         .WithMany()
                         .HasForeignKey("WinnerId")
@@ -366,8 +341,6 @@ namespace CourtBooking.Server.Migrations
                         .IsRequired();
 
                     b.Navigation("Loser");
-
-                    b.Navigation("ReportedBy");
 
                     b.Navigation("Winner");
                 });
@@ -452,6 +425,11 @@ namespace CourtBooking.Server.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("CourtBooking.Server.Models.Competitor", b =>
+                {
+                    b.Navigation("Players");
                 });
 #pragma warning restore 612, 618
         }

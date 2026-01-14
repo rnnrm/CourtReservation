@@ -15,14 +15,13 @@
     {
         public required string Id { get; set; } = System.Guid.NewGuid().ToString();
         public required string CompetitionName { get; set; }
-        public required string Winner1 { get; set; }
-        public string? Winner2 { get; set; } = null;
-        public required string Loser1 { get; set; }
-        public string? Loser2 { get; set; } = null;
+        public required Competitor Winner { get; set; }
+        public required Competitor Loser { get; set; }
         public required DateTime DatePlayed { get; set; } = DateTime.MinValue;
         public required int[] Score { get; set; }
+        public double PointsChange { get; set; } = 0;
         public required bool Confirmed { get; set; } = false;
-        public required string ReportedBy { get; set; }
+        public required Competitor ReportedBy { get; set; }
 
     }
 }

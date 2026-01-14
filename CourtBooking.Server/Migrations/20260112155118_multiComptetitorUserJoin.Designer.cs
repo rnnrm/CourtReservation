@@ -3,6 +3,7 @@ using System;
 using CourtBooking.Server;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CourtBooking.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260112155118_multiComptetitorUserJoin")]
+    partial class multiComptetitorUserJoin
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.20");
@@ -145,7 +148,7 @@ namespace CourtBooking.Server.Migrations
                     b.Property<double>("PointsChange")
                         .HasColumnType("REAL");
 
-                    b.Property<string>("ReportedById")
+                    b.Property<string>("ReportedBy")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -160,8 +163,6 @@ namespace CourtBooking.Server.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("LoserId");
-
-                    b.HasIndex("ReportedById");
 
                     b.HasIndex("WinnerId");
 
@@ -353,12 +354,6 @@ namespace CourtBooking.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CourtBooking.Server.Models.Competitor", "ReportedBy")
-                        .WithMany()
-                        .HasForeignKey("ReportedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("CourtBooking.Server.Models.Competitor", "Winner")
                         .WithMany()
                         .HasForeignKey("WinnerId")
@@ -366,8 +361,6 @@ namespace CourtBooking.Server.Migrations
                         .IsRequired();
 
                     b.Navigation("Loser");
-
-                    b.Navigation("ReportedBy");
 
                     b.Navigation("Winner");
                 });

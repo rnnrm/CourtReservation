@@ -10,7 +10,7 @@ using static CourtBooking.Server.Controllers.BookingsController;
 
 namespace CourtBooking.Server.Controllers
 {
-    public record UserViewModel(string Name, string Id, string[] Roles, int Rank, int? MemberNumber);
+    public record UserViewModel(string Name, string Id, string[] Roles, int? MemberNumber);
 
     [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
@@ -20,7 +20,7 @@ namespace CourtBooking.Server.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
-        private void RemoveRank(AppUser user)
+        /*private void RemoveRank(AppUser user)
         {
             var userRank = user.Rank;
             if (userRank > 0)
@@ -32,7 +32,7 @@ namespace CourtBooking.Server.Controllers
                 }
             }
             user.Rank = 0;
-        }
+        }*/
 
         public UsersController([FromServices] UserManager<AppUser> userManager, [FromServices] RoleManager<IdentityRole> roleManager)
         {
@@ -56,19 +56,11 @@ namespace CourtBooking.Server.Controllers
                     u.UserName ?? string.Empty,
                     u.Id ?? string.Empty,
                     roles?.ToArray() ?? Array.Empty<string>(),
-                    u.Rank,
                     u.MemberNumber
                 ));
             }
 
             var dict = list.ToDictionary(x => x.Id, x => x);
-
-            // Safe logging (avoid indexing into empty arrays)
-            foreach (var kv in dict)
-            {
-                var rolesText = kv.Value.Roles.Length > 0 ? string.Join(",", kv.Value.Roles) : "(no roles)";
-                Console.WriteLine($"user {kv.Value.Name} roles: {rolesText}");
-            }
 
             return Ok(dict);
         }
@@ -90,18 +82,18 @@ namespace CourtBooking.Server.Controllers
             if (await _userManager.IsInRoleAsync(currentUser!, p.Role))
             {
                 roleresult = await _userManager.RemoveFromRoleAsync(currentUser!, p.Role);
-                if (p.Role == "Member")
+                /*if (p.Role == "Member")
                 {
                     RemoveRank(currentUser);
                     await _userManager.UpdateAsync(currentUser);
-                }
+                }*/
             }
             else
             {
                 roleresult = await _userManager.AddToRoleAsync(currentUser!, p.Role);
-                if (p.Role == "Member")
+                /* if (p.Role == "Member")
                 {
-                    // Find the RoleId for "Member"
+                   // Find the RoleId for "Member"
                     var memberRole = await roleManager.FindByNameAsync("Member");
                     if (memberRole != null)
                     {
@@ -117,8 +109,8 @@ namespace CourtBooking.Server.Controllers
 
                         currentUser.Rank = maxRank + 1;
                         //generate member number
-                        if (currentUser.MemberNumber==null) 
-                        { 
+                        if (currentUser.MemberNumber == null)
+                        {
                             var MaxMemberNumber = await db.Users.MaxAsync(u => (int?)u.MemberNumber) ?? 0;
                             currentUser.MemberNumber = MaxMemberNumber + 1;
                         }
@@ -128,7 +120,7 @@ namespace CourtBooking.Server.Controllers
                         currentUser.Rank = 1;
                     }
                     await _userManager.UpdateAsync(currentUser);
-                }
+                }*/
             }
             await db.SaveChangesAsync();
 
@@ -142,7 +134,7 @@ namespace CourtBooking.Server.Controllers
             var user = await _userManager.FindByIdAsync(Id);
             if (user != null)
             {
-                RemoveRank(user);
+                //RemoveRank(user);
 
                 //delete users reservaions
                 db.RemoveRange(db.Reservations.Where(r => r.ExtendedProps.Owner == user.Id));

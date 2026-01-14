@@ -31,7 +31,7 @@ const Reservations = ({ user }) => {
                     );
                 })}
             </Tabs>
-            <Stack direction="horizontal" gap={2} className="me-auto">
+            <Stack direction="horizontal" gap={2} className="me-auto my-3">
                 <Badge bg="info" className="ms-auto">Member</Badge>
                 <Badge bg="danger">Admin</Badge>
                 <Badge bg="warning" text="dark" className="me-auto">

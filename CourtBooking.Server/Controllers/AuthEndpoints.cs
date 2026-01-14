@@ -31,7 +31,7 @@ public static class AuthEndpoints
 
             try
             {
-                var user = new AppUser { UserName = request.Name, Email = request.Email, Rank = 0 };
+                var user = new AppUser { UserName = request.Name, Email = request.Email };
                 var result = await userManager.CreateAsync(user, request.Password!);
                 if (!result.Succeeded)
                     return Results.ValidationProblem(result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description }));
@@ -65,8 +65,7 @@ public static class AuthEndpoints
                 return Results.Ok(new { 
                     user.Id, 
                     name = user.UserName, 
-                    role, 
-                    user.Rank,
+                    role,
                     user.MemberNumber
                     });
             }
@@ -96,7 +95,7 @@ public static class AuthEndpoints
             {
                 var id = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
                 var appuser = await signInManager.UserManager.FindByIdAsync(id!);
-                return Results.Ok(new { name = user.Identity.Name, appuser?.Id, role, appuser?.Rank });
+                return Results.Ok(new { name = user.Identity.Name, appuser?.Id, role });
             }
             else
                 return Results.Unauthorized();
@@ -138,7 +137,7 @@ public static class AuthEndpoints
                 user = await signInManager.UserManager.FindByEmailAsync(email);
                 if (user == null)
                 {
-                    user = new AppUser { Id = externalUserId, UserName = name ?? email, Email = email, Rank = 0 };
+                    user = new AppUser { Id = externalUserId, UserName = name ?? email, Email = email };
                     await signInManager.UserManager.CreateAsync(user);
                 }
                 await signInManager.UserManager.AddLoginAsync(user, new UserLoginInfo("Google", externalUserId, "Google"));

@@ -1,8 +1,4 @@
 <!doctype html>
-<script language="Javascript">
-    document.documentElement.setAttribute('data-bs-theme',
-        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
-</script>
 <html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8" />
@@ -13,6 +9,10 @@
     <title>Tennis Court Reservation</title>
 </head>
 <body>
+    <script language="Javascript">
+        document.documentElement.setAttribute('data-bs-theme',
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
 </body>

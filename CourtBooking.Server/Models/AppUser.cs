@@ -4,7 +4,7 @@ namespace CourtBooking.Server.Models
 {
     public class AppUser : IdentityUser
     {
-        public required int Rank { get; set; } = 0;
         public int? MemberNumber { get; set; }
+        public ICollection<Competitor> Competitions { get; set; } = [];
     }
 }
