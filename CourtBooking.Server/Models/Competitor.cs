@@ -22,5 +22,6 @@ namespace CourtBooking.Server.Models
         public required string Type { get; set; } = "singles";
         public required string Competition { get; set; }
         public required ICollection<AppUser> Players { get; set; } = [];
+        public int MatchesPlayed { get; set; } = 0;
     }
 }

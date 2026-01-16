@@ -7,23 +7,33 @@ import MatchReport from './MatchReport.jsx';
 const Ladder = ({ user }) => {
     const { competitionName } = useParams();
     const [matchResults, setMatchResults] = useState(null);
+    const [pendingResults, setPendingResults] = useState(null);
     const [competitors, setCompetitors] = useState(null);   
     const [adjectives, setAdjectives] = useState(["vaporized", "terminated", "crushed", "obliterated", "destroyed", "demolished", "annihilated", "decimated"]);
+    let rank = 1;
 
-        const getCompetitors = async () => {
-            let response = await post('/api/Ladder/Competitors?competitionName=' + encodeURIComponent(competitionName), null, null, "GET");
-            if (response.ok)
-                setCompetitors(await response.json());
-            else
-                setCompetitors(null);
-        }
+    const getCompetitors = async () => {
+        let response = await post('/api/Ladder/Competitors?competitionName=' + encodeURIComponent(competitionName), null, null, "GET");
+        if (response.ok)
+            setCompetitors(await response.json());
+        else
+            setCompetitors(null);
+    }
 
-        const getMatchResults = async () => {
-            let response = await post('/api/Ladder/Results?competitionName=' + encodeURIComponent(competitionName), null, null, "GET");
-            if (response.ok)
-                setMatchResults(await response.json());
-            else
-                setMatchResults(null);
+    const getMatchResults = async () => {
+        let response = await post('/api/Ladder/Results?competitionName=' + encodeURIComponent(competitionName), null, null, "GET");
+        if (response.ok)
+            setMatchResults(await response.json());
+        else
+            setMatchResults(null);
+    };
+
+    const getPendingResults = async () => {
+        let response = await post('/api/Ladder/PendingResults?competitionName=' + encodeURIComponent(competitionName), null, null, "GET");
+        if (response.ok)
+            setPendingResults(await response.json());
+        else
+            setPendingResults(null);
     };
 
     const initialize = () => {
@@ -34,6 +44,7 @@ const Ladder = ({ user }) => {
     useEffect(() => {
         getCompetitors();
         getMatchResults();
+        getPendingResults();
     }, [user, competitionName]);
 
     useEffect(() => {
@@ -61,8 +72,12 @@ const Ladder = ({ user }) => {
                 </thead>
                 <tbody>
                     {competitors && competitors?.map((c, i) => {
+                        if (i > 0) { 
+                            if (competitors[i - 1].rating < c.rating)
+                                rank++;
+                        }
                         return <tr key={c.Id + "" + i}>
-                            <td>{i+1}</td>
+                            <td>{rank}</td>
                             <td>{c.players[0].userName} {c.type === "doubles" ? " / " + c.players[1]?.userName : null}</td>
                             <td>{c.rating}</td>
                         </tr>
@@ -72,8 +87,8 @@ const Ladder = ({ user }) => {
             </Table>
             {matchResults?.length>0 &&
                 <>
-                <h3>Latest results</h3>
-                <div style={{height:"200px",overflowY:"auto"}}>
+                    <h3 className="mt-3">Latest results</h3>
+                <div style={{maxHeight:"200px",overflowY:"auto"}}>
                     {matchResults.map((result, i) => (
                         <div key={i}>
                             {result.winner1} {result.winner2 ? ' & '+result.winner2 :""}<sup style={{ color: "lightgreen" }} >+{result.pointsChange}</sup> <i>{adjectives[i]} </i>
@@ -82,6 +97,20 @@ const Ladder = ({ user }) => {
                         </div>
                     ))}
                 </div>
+                </>
+            }
+            {pendingResults?.length > 0 &&
+                <>
+                <h4 className="mt-3">Results pending confirmation</h4>
+                <div style={{ maxHeight: "200px", overflowY: "auto" }}>
+                    {pendingResults.map((result, i) => (
+                        <div key={i}>
+                            {result.winner1} {result.winner2 ? ' & ' + result.winner2 : ""} vs {result.loser1} {result.loser2 ? ' & ' + result.loser2 : ""}
+                            <br /><b> {result.score} </b> on {result.datePlayed} reported by {result.reportedBy}
+                        </div>
+                    )) 
+                    }
+                    </div>
                 </>
             }
 
