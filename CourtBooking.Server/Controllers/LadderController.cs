@@ -1,4 +1,5 @@
-﻿using CourtBooking.Server.Models;
+﻿using CourtBooking.Server.Migrations;
+using CourtBooking.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -165,6 +166,8 @@ namespace CourtBooking.Server.Controllers
                 else
                 {
                     match.Confirmed = true;
+                    match.Loser.MatchesPlayed++;
+                    match.Winner.MatchesPlayed++;
                     UpdatePoints(match);
                     await db.SaveChangesAsync();
                     return Ok("Updated");
@@ -214,6 +217,31 @@ namespace CourtBooking.Server.Controllers
             return Ok(competitors);
         }
 
+        [HttpGet("PendingResults")]
+        public IActionResult GetPendingResults([FromServices] ApplicationDbContext db, [FromQuery] string competitionName)
+        {
+            var Id = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var loggedInUser =  _userManager.FindByIdAsync(Id!).Result;
+            var matches = db.MatchResults.Where(m => !m.Confirmed &&
+            (m.CompetitionName == competitionName) &&
+            (m.Winner.Players.Any(p => p.Id == loggedInUser.Id) ||
+            m.Loser.Players.Any(p => p.Id == loggedInUser.Id)))
+                .Select(m => new
+                {
+                    Id = m.Id,
+                    Winner1 = m.Winner.Players.First().UserName,
+                    Winner2 = m.Winner.Type == "doubles" ? m.Winner.Players.Skip(1).First().UserName : null,
+                    Loser1 = m.Loser.Players.First().UserName,
+                    Loser2 = m.Loser.Type == "doubles" ? m.Loser.Players.Skip(1).First().UserName : null,
+                    Score = FormatScore(m.Score),
+                    DatePlayed = m.DatePlayed.ToShortDateString(),
+                    CompetitionName = m.CompetitionName,
+                    ReportedBy = m.ReportedBy.Players.First().UserName
+                }
+            );
+            return Ok(matches);
+        }
+
         //get recent match results for competition
         [AllowAnonymous]
         [HttpGet("Results")]
@@ -226,7 +254,7 @@ namespace CourtBooking.Server.Controllers
             var matches = db.MatchResults.Where(m => m.Confirmed && 
             (m.CompetitionName == competitionName))
                 .OrderByDescending(m => m.DatePlayed)
-                .Take(20)
+                .Take(50)
                 .Select(m => new
             {
                 Winner1 = m.Winner.Players.First().UserName,
@@ -236,7 +264,7 @@ namespace CourtBooking.Server.Controllers
                 Score = FormatScore(m.Score),
                 DatePlayed = m.DatePlayed.ToShortDateString(),
                 PointsChange = Math.Round(m.PointsChange, 1)
-            }
+                }
             );
 
   /*          var nameLower = competitionName.ToLowerInvariant();
