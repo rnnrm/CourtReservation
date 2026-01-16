@@ -59,8 +59,8 @@ namespace CourtBooking.Server.Controllers
 
                 bool doubles = !string.IsNullOrEmpty(p.Partner) && !string.IsNullOrEmpty(p.Opponent2);
                 string Winner1 = loggedInUser.Id;
-                string Loser1 = p.Opponent;
                 string? Winner2 = p.Partner;
+                string Loser1 = p.Opponent;
                 string? Loser2 = p.Opponent2;
                 if (lose > win)
                 {
@@ -69,9 +69,9 @@ namespace CourtBooking.Server.Controllers
                         (p.Score[i], p.Score[i + 1]) = (p.Score[i + 1], p.Score[i]); //swap
                     }
                     Winner1 = p.Opponent;
+                    Winner2 = p.Opponent2;
                     Loser1 = loggedInUser.Id;
-                    Winner2 = p.Partner;
-                    Loser2 = p.Opponent2;
+                    Loser2 = p.Partner;
                 }
             
                 var winners = db.Competitors.Where(c =>
