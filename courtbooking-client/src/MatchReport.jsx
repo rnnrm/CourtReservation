@@ -9,6 +9,7 @@ import Col from 'react-bootstrap/Col';
 import { useParams } from "react-router-dom";
 
 const MatchReport = ({ user, updateDisplay }) => {
+    const [loading, setLoading] = useState(false);
     const { competitionName } = useParams();
     const doubles = competitionName === "Doubles Ladder";
     const [matchStatus, setMatchStatus] = useState(null);
@@ -55,6 +56,7 @@ const MatchReport = ({ user, updateDisplay }) => {
         if (score[0] === score[1]) { setError("Bad score"); return; }
         var _score = score.slice(0, sets * 2);
         if (!opponent) { setError("No opponent selected"); return; }
+        setLoading(true);
         let response = await post('/api/ladder',
             {
                 CompetitionName: competitionName,
@@ -65,13 +67,12 @@ const MatchReport = ({ user, updateDisplay }) => {
                 Opponent2: doubles ? opponent2?.id : null,
             }, null);
 
+        setLoading(false);
         if (!response.ok) {
             setError("Failed to record result");
             return;
         }
         handleClose();
-        //getCompetitors();
-        //getMatchResults();
         updateDisplay();
         setError("");
         response = await response.json();
@@ -80,6 +81,11 @@ const MatchReport = ({ user, updateDisplay }) => {
     };
     return (
         <>
+        <Modal centered show={loading}>
+            <Modal.Body>
+                <h4>Recording match result...</h4>
+            </Modal.Body>
+        </Modal>
         <Modal show={show} onHide={handleClose}>
             <Modal.Header closeButton>
                 <Modal.Title>Record match result</Modal.Title>

@@ -12,7 +12,7 @@ const Login = ({ user, setUser }) => {
     let navigate = useNavigate();
 
     const getUsers = async () => {
-        let response = await post('api/Users', null, null, "GET");
+        let response = await post('/api/Users', null, null, "GET");
         if (response.ok)
             setUsers(await response.json());
         else
@@ -25,23 +25,27 @@ const Login = ({ user, setUser }) => {
     }, [user]);
 
     const deleteUser = async (id) => {
-        let result = await post('api/Users', id, null, "DELETE");
+        let result = await post('/api/Users', id, null, "DELETE");
         if (result.ok)
             getUsers();
     }
 
     const updateMembership = async (id, role) => {
-        await post('api/Users/toggleRole', { Id: id, Role: role }, null, "PATCH");
+        await post('/api/Users/toggleRole', { Id: id, Role: role }, null, "PATCH");
+    }
+
+    const updateMembershipNumber = async (id, memberNumber) => {
+        await post('/api/Users/setMemberNumber', { Id: id, MemberNumber: memberNumber }, null);
     }
 
     const logout = async () => {
-        await post('api/auth/logout', null, null, "GET");
+        await post('/api/auth/logout', null, null, "GET");
         setUser(null);
         setLoginErrorText('Logged out.');
     };
 
     const register = async (formData) => {
-        var response = await post('api/auth/register', {
+        var response = await post('/api/auth/register', {
             Email: formData.get('email'),
             Name: formData.get('name'),
             Password: formData.get('password')
@@ -183,7 +187,18 @@ const Login = ({ user, setUser }) => {
                                         />
                                     </td>
                                     <td>
-                                        {thisUser.memberNumber}
+                                        <input type="text"
+                                            value={thisUser.memberNumber}
+                                            size="7"
+                                            onChange={(e) => {
+                                                setUsers({
+                                                    ...users,
+                                                    [i]: {
+                                                        ...thisUser, memberNumber: e.target.value
+                                                    }
+                                                }); updateMembershipNumber(thisUser.id, e.target.value);
+                                            }}
+                                        />
                                     </td>
                                     <td>
                                         <input type="button"

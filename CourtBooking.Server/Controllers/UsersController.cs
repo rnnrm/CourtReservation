@@ -65,6 +65,23 @@ namespace CourtBooking.Server.Controllers
             return Ok(dict);
         }
 
+        public record MembernumParameters
+        {
+            public required string Id { get; set; }
+            public required int MemberNumber { get; set; }
+        }
+
+        [HttpPost("setMemberNumber")]
+        public async Task<IActionResult> SetMemberNumber([FromServices] ApplicationDbContext db, [FromBody] MembernumParameters membernumParameters)
+        {
+            var user = await _userManager.FindByIdAsync(membernumParameters.Id);
+            if (user == null) return NotFound("User not found");
+            user.MemberNumber = membernumParameters.MemberNumber;
+            await _userManager.UpdateAsync(user);
+
+            return Ok();
+        }
+
         public class RoleParameters
         {
             public required string Id { get; set; }
@@ -91,13 +108,13 @@ namespace CourtBooking.Server.Controllers
             else
             {
                 roleresult = await _userManager.AddToRoleAsync(currentUser!, p.Role);
-                /* if (p.Role == "Member")
+                if (p.Role == "Member")
                 {
                    // Find the RoleId for "Member"
                     var memberRole = await roleManager.FindByNameAsync("Member");
                     if (memberRole != null)
                     {
-                        // Query AspNetUserRoles for user ids that have the Member role
+                        /*// Query AspNetUserRoles for user ids that have the Member role
                         var memberUserIds = db.Set<IdentityUserRole<string>>()
                                               .Where(ur => ur.RoleId == memberRole.Id)
                                               .Select(ur => ur.UserId);
@@ -107,7 +124,7 @@ namespace CourtBooking.Server.Controllers
                                               .Where(u => memberUserIds.Contains(u.Id))
                                               .MaxAsync(u => (int?)u.Rank) ?? 0;
 
-                        currentUser.Rank = maxRank + 1;
+                        currentUser.Rank = maxRank + 1;*/
                         //generate member number
                         if (currentUser.MemberNumber == null)
                         {
@@ -115,12 +132,8 @@ namespace CourtBooking.Server.Controllers
                             currentUser.MemberNumber = MaxMemberNumber + 1;
                         }
                     }
-                    else
-                    {
-                        currentUser.Rank = 1;
-                    }
                     await _userManager.UpdateAsync(currentUser);
-                }*/
+                }
             }
             await db.SaveChangesAsync();
 
