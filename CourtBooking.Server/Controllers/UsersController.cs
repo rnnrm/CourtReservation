@@ -65,6 +65,23 @@ namespace CourtBooking.Server.Controllers
             return Ok(dict);
         }
 
+        public record MembernumParameters
+        {
+            public required string Id { get; set; }
+            public required int MemberNumber { get; set; }
+        }
+
+        [HttpPost("setMemberNumber")]
+        public async Task<IActionResult> SetMemberNumber([FromServices] ApplicationDbContext db, [FromBody] MembernumParameters membernumParameters)
+        {
+            var user = await _userManager.FindByIdAsync(membernumParameters.Id);
+            if (user == null) return NotFound("User not found");
+            user.MemberNumber = membernumParameters.MemberNumber;
+            await _userManager.UpdateAsync(user);
+
+            return Ok();
+        }
+
         public class RoleParameters
         {
             public required string Id { get; set; }
