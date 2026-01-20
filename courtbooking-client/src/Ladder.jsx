@@ -39,6 +39,7 @@ const Ladder = ({ user }) => {
     const initialize = () => {
         getCompetitors();
         getMatchResults();
+        getPendingResults();
     }
 
     useEffect(() => {
@@ -101,7 +102,7 @@ const Ladder = ({ user }) => {
             }
             {pendingResults?.length > 0 &&
                 <>
-                <h4 className="mt-3">Results pending confirmation</h4>
+                <h5 className="mt-3">Results awaiting confirmation:</h5>
                 <div style={{ maxHeight: "200px", overflowY: "auto" }}>
                     {pendingResults.map((result, i) => (
                         <div key={i}>

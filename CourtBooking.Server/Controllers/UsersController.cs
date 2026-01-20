@@ -91,13 +91,13 @@ namespace CourtBooking.Server.Controllers
             else
             {
                 roleresult = await _userManager.AddToRoleAsync(currentUser!, p.Role);
-                /* if (p.Role == "Member")
+                if (p.Role == "Member")
                 {
                    // Find the RoleId for "Member"
                     var memberRole = await roleManager.FindByNameAsync("Member");
                     if (memberRole != null)
                     {
-                        // Query AspNetUserRoles for user ids that have the Member role
+                        /*// Query AspNetUserRoles for user ids that have the Member role
                         var memberUserIds = db.Set<IdentityUserRole<string>>()
                                               .Where(ur => ur.RoleId == memberRole.Id)
                                               .Select(ur => ur.UserId);
@@ -107,7 +107,7 @@ namespace CourtBooking.Server.Controllers
                                               .Where(u => memberUserIds.Contains(u.Id))
                                               .MaxAsync(u => (int?)u.Rank) ?? 0;
 
-                        currentUser.Rank = maxRank + 1;
+                        currentUser.Rank = maxRank + 1;*/
                         //generate member number
                         if (currentUser.MemberNumber == null)
                         {
@@ -115,12 +115,8 @@ namespace CourtBooking.Server.Controllers
                             currentUser.MemberNumber = MaxMemberNumber + 1;
                         }
                     }
-                    else
-                    {
-                        currentUser.Rank = 1;
-                    }
                     await _userManager.UpdateAsync(currentUser);
-                }*/
+                }
             }
             await db.SaveChangesAsync();
 

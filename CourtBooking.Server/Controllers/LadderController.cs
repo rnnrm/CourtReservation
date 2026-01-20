@@ -221,22 +221,24 @@ namespace CourtBooking.Server.Controllers
         public IActionResult GetPendingResults([FromServices] ApplicationDbContext db, [FromQuery] string competitionName)
         {
             var Id = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            var loggedInUser =  _userManager.FindByIdAsync(Id!).Result;
+            var loggedInUser =  _userManager.FindByIdAsync(Id!).Result!;
             var matches = db.MatchResults.Where(m => !m.Confirmed &&
             (m.CompetitionName == competitionName) &&
             (m.Winner.Players.Any(p => p.Id == loggedInUser.Id) ||
             m.Loser.Players.Any(p => p.Id == loggedInUser.Id)))
                 .Select(m => new
                 {
-                    Id = m.Id,
+                    m.Id,
                     Winner1 = m.Winner.Players.First().UserName,
                     Winner2 = m.Winner.Type == "doubles" ? m.Winner.Players.Skip(1).First().UserName : null,
                     Loser1 = m.Loser.Players.First().UserName,
                     Loser2 = m.Loser.Type == "doubles" ? m.Loser.Players.Skip(1).First().UserName : null,
                     Score = FormatScore(m.Score),
                     DatePlayed = m.DatePlayed.ToShortDateString(),
-                    CompetitionName = m.CompetitionName,
-                    ReportedBy = m.ReportedBy.Players.First().UserName
+                    m.CompetitionName,
+                    ReportedBy = m.ReportedBy.Players.Count > 1 ? 
+                        m.ReportedBy.Players.First().UserName +" & "+ m.ReportedBy.Players.Skip(1).First().UserName : 
+                        m.ReportedBy.Players.First().UserName                    
                 }
             );
             return Ok(matches);

@@ -1,0 +1,13 @@
+{
+  "name": "KenRho Tennis Club",
+  "icons": [
+    {
+      "src": "/tennis-court-svgrepo.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512"
+    }
+  ],
+  "display": "standalone",
+  "start_url": "https://kenrho.vercel.app",
+  "prefer_related_applications": false
+}

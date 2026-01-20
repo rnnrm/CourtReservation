@@ -70,8 +70,6 @@ const MatchReport = ({ user, updateDisplay }) => {
             return;
         }
         handleClose();
-        //getCompetitors();
-        //getMatchResults();
         updateDisplay();
         setError("");
         response = await response.json();
