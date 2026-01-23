@@ -7,15 +7,22 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
+using Org.BouncyCastle.Ocsp;
 using System;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Principal;
+using System.Text;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
+using static System.Net.WebRequestMethods;
 
 namespace CourtBooking.Server.Endpoints;
 
 public static class AuthEndpoints
 {
+    public record SendResetLinkRequest(string UserEmail);
+    public record ChangePasswordRequest(string UserEmail, string ResetToken, string NewPassword);
     public static WebApplication MapAuthEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/api/auth");
@@ -45,6 +52,7 @@ public static class AuthEndpoints
             }
         });
 
+        //login
         group.MapPost("/login", async (
             LoginRequest request,
             UserManager<AppUser> userManager,
@@ -100,15 +108,46 @@ public static class AuthEndpoints
             else
                 return Results.Unauthorized();
         });
-
-        //change password
-        group.MapPost("/reset", [Authorize("Admin")] async (UserManager<AppUser> userManager, string Id, string newPassword) =>
+    //change paasword [Authorize("Admin")]
+        group.MapPost("/sendResetLink",  async (SendResetLinkRequest req, EmailSender emailSender, UserManager<AppUser> userManager) =>
         {
-            var user = await userManager.FindByIdAsync(Id);
+            var user = await userManager.FindByEmailAsync(req.UserEmail);
             if (user == null)
                 return Results.NotFound();
+
             var resetToken = await userManager.GeneratePasswordResetTokenAsync(user);
-            await userManager.ResetPasswordAsync(user, resetToken, newPassword);
+            string baseURl = app.Configuration["FRONTEND_URL"] ?? @"https://kenro.vercel.app";
+            resetToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(resetToken));
+            var encodedEmail = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(user.Email!));
+            string message = $"Reset password was requested from {baseURl}" +
+            $"\nCopy (or click) this address fully into your browser to change your password:\n\n" +
+            $"{baseURl}/reset?email={encodedEmail}&token={resetToken}";
+            try { 
+                emailSender.Send(null, req.UserEmail, "Password reset token", message);
+            } catch(Exception e){
+                return Results.BadRequest(e.Message);
+            }
+
+            return Results.Ok();
+        });
+
+        group.MapPost("/changePassword",[AllowAnonymous] async (UserManager<AppUser> userManager, ChangePasswordRequest req) =>
+        {
+
+            var email = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(req.UserEmail));
+            var token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(req.ResetToken));
+            var user = await userManager.FindByEmailAsync(email);
+            if (user == null)
+                return Results.NotFound();
+            try {
+                var resetResult = await userManager.ResetPasswordAsync(user, token, req.NewPassword);
+                if (!resetResult.Succeeded)
+                    return Results.BadRequest(resetResult.Errors.Select(e => e.Description));
+            } catch(Exception e)
+            {
+                Console.WriteLine("changePassword exception: " + e.Message);
+                return Results.BadRequest(e.Message);
+            }
             return Results.Ok();
         });
 

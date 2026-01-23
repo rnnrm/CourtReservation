@@ -59,7 +59,8 @@ const Ladder = ({ user }) => {
     }, [])
 
     return (
-        <div className="p-4">
+        <div className="p-4 mt-4">
+            <div className="my-3"></div>
             {user?.role === ("Member") &&
                 <MatchReport user={user} updateDisplay={initialize} />}
 
@@ -73,10 +74,10 @@ const Ladder = ({ user }) => {
                 </thead>
                 <tbody>
                     {competitors && competitors?.map((c, i) => {
-                        if (i > 0) { 
-                            if (competitors[i - 1].rating < c.rating)
-                                rank++;
-                        }
+                        if (i > 0)
+                            if (Number(competitors[i - 1].rating) > Number(c.rating)) { 
+                                ++rank;
+                            }
                         return <tr key={c.Id + "" + i}>
                             <td>{rank}</td>
                             <td>{c.players[0].userName} {c.type === "doubles" ? " / " + c.players[1]?.userName : null}</td>
@@ -88,13 +89,14 @@ const Ladder = ({ user }) => {
             </Table>
             {matchResults?.length>0 &&
                 <>
-                    <h3 className="mt-3">Latest results</h3>
-                <div style={{maxHeight:"200px",overflowY:"auto"}}>
+                <h3 className="my-4">Latest results</h3>
+                <div style={{maxHeight:"300px",overflowY:"auto"}}>
                     {matchResults.map((result, i) => (
                         <div key={i}>
                             {result.winner1} {result.winner2 ? ' & '+result.winner2 :""}<sup style={{ color: "lightgreen" }} >+{result.pointsChange}</sup> <i>{adjectives[i]} </i>
                             {result.loser1} {result.loser2 ? ' & ' + result.loser2 : ""}<sup style={{ color: "red" }} >-{result.pointsChange} </sup>
                             <br/><b> {result.score} </b> on {result.datePlayed}
+                            <hr />
                         </div>
                     ))}
                 </div>
@@ -102,12 +104,13 @@ const Ladder = ({ user }) => {
             }
             {pendingResults?.length > 0 &&
                 <>
-                <h5 className="mt-3">Results awaiting confirmation:</h5>
-                <div style={{ maxHeight: "200px", overflowY: "auto" }}>
+                <h5 className="my-4">Results awaiting confirmation:</h5>
+                <div style={{ maxHeight: "300px", overflowY: "auto" }}>
                     {pendingResults.map((result, i) => (
                         <div key={i}>
                             {result.winner1} {result.winner2 ? ' & ' + result.winner2 : ""} vs {result.loser1} {result.loser2 ? ' & ' + result.loser2 : ""}
                             <br /><b> {result.score} </b> on {result.datePlayed} reported by {result.reportedBy}
+                            <hr/>
                         </div>
                     )) 
                     }
