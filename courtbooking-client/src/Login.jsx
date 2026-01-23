@@ -8,6 +8,7 @@ const Login = ({ user, setUser }) => {
     const [loginErrorText, setLoginErrorText] = useState('');
     const [users, setUsers] = useState();
     const [state, action, isPending] = useActionState(handleLogin, null);
+    const [forgotState, forgotAction, forgotIsPending] = useActionState(forgotPassword, null);
 
     let navigate = useNavigate();
 
@@ -45,6 +46,8 @@ const Login = ({ user, setUser }) => {
     };
 
     const register = async (formData) => {
+
+        setLoginErrorText("Loading...");
         var response = await post('/api/auth/register', {
             Email: formData.get('email'),
             Name: formData.get('name'),
@@ -94,6 +97,15 @@ const Login = ({ user, setUser }) => {
         }
     }
 
+    async function forgotPassword(prevState, formData) {
+        var email = formData.get('email');
+        var response = await post("/api/auth/sendResetLink", { userEmail: email }, null);
+        if (response.ok)
+            alert("Email with reset link was sent to: " + email);
+        else
+            alert("No registered user with that email.");
+    }
+
     return (
         <div className="p-4">
             <h2 className="my-3">Login</h2>
@@ -124,6 +136,8 @@ const Login = ({ user, setUser }) => {
                             <Button className="m-1" variant="secondary" type="submit" id="reg" disabled={isPending} formAction={register}>
                                 Register
                             </Button>
+                            <br/>
+                            <Button variant="" type="submit" formAction={forgotAction} disabled={forgotIsPending}><u>Reset password</u></Button>
                             {/*<br/>
                             <Button className="m-1" id="google" onClick={() => window.location.href = "/api/auth/login-google"} type="submit" formAction={() => { }}>
                                 Sign in with Google
@@ -134,6 +148,7 @@ const Login = ({ user, setUser }) => {
                     :
                     <Button variant="secondary" type="button" id="logout" onClick={logout}>Logout</Button>
                 }
+                {isPending || forgotIsPending ? <>Loading...<br/></> : "" }
                 {loginErrorText && <div style={{ color: 'red' }}>{loginErrorText}</div>}
                 <div>{state}</div>
                 <p className="my-3">If you are a member, let a club administrator know your display name after you register so that they can activate your account.</p>

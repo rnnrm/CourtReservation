@@ -8,6 +8,7 @@ import Login from './Login.jsx';
 import Reservations from './Reservations.jsx';
 import Ladder from './Ladder.jsx';
 import App from './App.jsx';
+import ResetPassword from './ResetPassword.jsx';
 
 const MyRoutes = () => {
     const [user, setUser] = useState(null);
@@ -40,6 +41,7 @@ const MyRoutes = () => {
                 <Route index element={<Login className={{ padding: "2rem" }} user={user} setUser={setUser} />} />
                 <Route path="/reservations" element={<Reservations user={user} />} />
                 <Route path="/ladder/:competitionName" element={<Ladder user={user} />} />
+                <Route path="/reset/" element={<ResetPassword />} />
             </Route>
         </Routes >
     );

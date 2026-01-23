@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
-using static CourtBooking.Server.Controllers.BookingsController;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,30 +14,8 @@ namespace CourtBooking.Server.Controllers
     [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class UsersController([FromServices] UserManager<AppUser> userManager, [FromServices] RoleManager<IdentityRole> roleManager, [ FromServices] ApplicationDbContext db) : ControllerBase
     {
-        private readonly UserManager<AppUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-
-        /*private void RemoveRank(AppUser user)
-        {
-            var userRank = user.Rank;
-            if (userRank > 0)
-            {
-                var usersToUpdate = _userManager.Users.Where(u => u.Rank > userRank).ToList();
-                foreach (var u in usersToUpdate)
-                {
-                    u.Rank -= 1;
-                }
-            }
-            user.Rank = 0;
-        }*/
-
-        public UsersController([FromServices] UserManager<AppUser> userManager, [FromServices] RoleManager<IdentityRole> roleManager)
-        {
-            _userManager = userManager;
-            _roleManager = roleManager;
-        }
 
         //get all users
         // GET: api/Users
@@ -46,16 +23,16 @@ namespace CourtBooking.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<Dictionary<string, UserViewModel>>> Get()
         {
-            var users = await _userManager.Users.ToListAsync();
+            var users = await userManager.Users.ToListAsync();
 
             var list = new List<UserViewModel>();
             foreach (var u in users)
             {
-                var roles = await _userManager.GetRolesAsync(u);
+                var roles = await userManager.GetRolesAsync(u);
                 list.Add(new UserViewModel(
                     u.UserName ?? string.Empty,
                     u.Id ?? string.Empty,
-                    roles?.ToArray() ?? Array.Empty<string>(),
+                    roles?.ToArray() ?? [],
                     u.MemberNumber
                 ));
             }
@@ -72,12 +49,12 @@ namespace CourtBooking.Server.Controllers
         }
 
         [HttpPost("setMemberNumber")]
-        public async Task<IActionResult> SetMemberNumber([FromServices] ApplicationDbContext db, [FromBody] MembernumParameters membernumParameters)
+        public async Task<IActionResult> SetMemberNumber([FromBody] MembernumParameters membernumParameters)
         {
-            var user = await _userManager.FindByIdAsync(membernumParameters.Id);
+            var user = await userManager.FindByIdAsync(membernumParameters.Id);
             if (user == null) return NotFound("User not found");
             user.MemberNumber = membernumParameters.MemberNumber;
-            await _userManager.UpdateAsync(user);
+            await userManager.UpdateAsync(user);
 
             return Ok();
         }
@@ -90,15 +67,15 @@ namespace CourtBooking.Server.Controllers
 
         // PUT api/<Users>/role
         [HttpPatch("toggleRole")]
-        public async Task<IActionResult> Patch([FromServices] RoleManager<IdentityRole> roleManager, [FromServices] ApplicationDbContext db, [FromBody] RoleParameters p)
+        public async Task<IActionResult> Patch( [FromBody] RoleParameters p)
         {
-            var currentUser = await _userManager.FindByIdAsync(p.Id);
+            var currentUser = await userManager.FindByIdAsync(p.Id);
             if (currentUser == null) return NotFound();
 
             IdentityResult roleresult;
-            if (await _userManager.IsInRoleAsync(currentUser!, p.Role))
+            if (await userManager.IsInRoleAsync(currentUser!, p.Role))
             {
-                roleresult = await _userManager.RemoveFromRoleAsync(currentUser!, p.Role);
+                roleresult = await userManager.RemoveFromRoleAsync(currentUser!, p.Role);
                 /*if (p.Role == "Member")
                 {
                     RemoveRank(currentUser);
@@ -107,7 +84,7 @@ namespace CourtBooking.Server.Controllers
             }
             else
             {
-                roleresult = await _userManager.AddToRoleAsync(currentUser!, p.Role);
+                roleresult = await userManager.AddToRoleAsync(currentUser!, p.Role);
                 if (p.Role == "Member")
                 {
                    // Find the RoleId for "Member"
@@ -132,7 +109,7 @@ namespace CourtBooking.Server.Controllers
                             currentUser.MemberNumber = MaxMemberNumber + 1;
                         }
                     }
-                    await _userManager.UpdateAsync(currentUser);
+                    await userManager.UpdateAsync(currentUser);
                 }
             }
             await db.SaveChangesAsync();
@@ -142,9 +119,9 @@ namespace CourtBooking.Server.Controllers
 
         // DELETE api/Users
         [HttpDelete]
-        public async Task<IActionResult> Delete([FromServices] ApplicationDbContext db, [FromBody] string Id)
+        public async Task<IActionResult> Delete([FromBody] string Id)
         {
-            var user = await _userManager.FindByIdAsync(Id);
+            var user = await userManager.FindByIdAsync(Id);
             if (user != null)
             {
                 //RemoveRank(user);
@@ -153,7 +130,7 @@ namespace CourtBooking.Server.Controllers
                 db.RemoveRange(db.Reservations.Where(r => r.ExtendedProps.Owner == user.Id));
 
                 //delete user
-                var result = await _userManager.DeleteAsync(user);
+                var result = await userManager.DeleteAsync(user);
                 if (!result.Succeeded)
                     return BadRequest(result.Errors.Select(e => e.Description));
 

@@ -88,6 +88,8 @@ CourtBooking.Server/obj/
 CourtBooking.Server/bin/
 /CourtBooking.Server/app.db-shm
 /CourtBooking.Server/app.db-wal
+secrets/
+/secrets/email_password.txt
 /secrets/certificate_password.txt
 /secrets/google_client_id.txt
 /secrets/google_client_secret.txt

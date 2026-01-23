@@ -14,14 +14,13 @@ export const post = async (url, obj, errorResponses, method = "POST") => {
 
         if (!response.ok) {
             const contentType = response.headers.get("content-type");
-            console.log('contentType',contentType);
             if (!contentType || !contentType.includes("application/json") && !contentType.includes("application/problem+json")) {
-                console.log("not json error ", errorStatus(response.status));
+                console.log("nonjson error: ", errorStatus(response.status));
                 if (errorResponses)
                     errorResponses(errorStatus(response));
             } else  {
                 response = await response.json();
-                console.log("application/json error",response);
+                console.log("application/json error: ",response);
                 if (errorResponses)
                     errorResponses(response);
             }

@@ -28,7 +28,10 @@ if (Directory.Exists(secretsPath))
 }
 
 // Add services to the container.
-
+builder.Services.AddSingleton<EmailSender>(sp => new EmailSender(
+    builder.Configuration["EMAIL_SERVER"],
+    builder.Configuration["EMAIL_ADDRESS"],
+    builder.Configuration["email_password"]));
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -102,8 +105,8 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(cfg =>
 //builder.Services.AddIdentityApiEndpoints<IdentityUser>()
 //builder.Services.AddIdentityApiEndpoints<AppUser>() //AppUser, IdentityRole
     .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
-
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
 //builder.AddSignInManager<SignInManager<AppUser>>();
 //builder.Services.TryAddScoped<SignInManager<AppUser>>();
 
@@ -164,7 +167,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseDeveloperExceptionPage();
 
-//app.MapGroup("/api/auth").MapIdentityApi<AppUser>();
 app.MapAuthEndpoints();
 app.MapControllers();
 

@@ -74,7 +74,8 @@ namespace CourtBooking.Server.Controllers
                     Loser1 = loggedInUser.Id;
                     Loser2 = p.Partner;
                 }
-            
+
+                //find or create competitors
                 var winners = db.Competitors.Where(c =>
                     c.Competition == p.CompetitionName
                     && c.Players.Any(pl => pl.Id == Winner1)
@@ -108,6 +109,7 @@ namespace CourtBooking.Server.Controllers
                 }
                 await db.SaveChangesAsync();
 
+                //determine who reported
                 var ReportedBy = winners;
                 if (lose > win)
                     ReportedBy = losers;

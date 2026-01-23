@@ -20,6 +20,7 @@ services:
     secrets:
       - google_client_id
       - google_client_secret
+      - email_password
       - source: certificate_password
         target: Kestrel__Certificates__Default__Password
 
@@ -30,3 +31,5 @@ secrets:
     file: ./secrets/google_client_secret.txt
   certificate_password:
     file: ./secrets/certificate_password.txt
+  email_password:
+    file: ./secrets/email_password.txt
