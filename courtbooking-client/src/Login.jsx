@@ -103,7 +103,7 @@ const Login = ({ user, setUser }) => {
         if (response.ok)
             alert("Email with reset link was sent to: " + email);
         else
-            alert("No registered user with that email.");
+            alert(response);
     }
 
     return (
