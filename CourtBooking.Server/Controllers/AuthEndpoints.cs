@@ -1,21 +1,11 @@
 using CourtBooking.Server.Models;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
+//using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using Org.BouncyCastle.Ocsp;
-using System;
-using System.Net.Http;
 using System.Security.Claims;
-using System.Security.Principal;
 using System.Text;
-using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
-using static System.Net.WebRequestMethods;
 
 namespace CourtBooking.Server.Endpoints;
 
@@ -88,7 +78,6 @@ public static class AuthEndpoints
         {
             await signInManager.SignOutAsync();
             await httpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-            //await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return Results.Ok();
         });
 
@@ -108,7 +97,7 @@ public static class AuthEndpoints
             else
                 return Results.Unauthorized();
         });
-    //change paasword [Authorize("Admin")]
+
         group.MapPost("/sendResetLink",  async (SendResetLinkRequest req, EmailSender emailSender, UserManager<AppUser> userManager) =>
         {
             var user = await userManager.FindByEmailAsync(req.UserEmail);
@@ -151,6 +140,7 @@ public static class AuthEndpoints
             return Results.Ok();
         });
 
+        /*
         group.MapGet("/login-google", async (IConfiguration config, HttpContext httpContext) =>
         {
             string redirectUri = config["FRONTEND_URL"] + ":32771/api/auth/signin-google-callback";
@@ -193,7 +183,7 @@ public static class AuthEndpoints
             //return Results.Redirect(returnUrl);
         });
 
-        /* group.MapGet("/mysignin-google", async (HttpContext httpContext, SignInManager<AppUser> signInManager, string returnUrl = "/") =>
+         group.MapGet("/mysignin-google", async (HttpContext httpContext, SignInManager<AppUser> signInManager, string returnUrl = "/") =>
          {
              // Use SignInManager helpers to read the external cookie and sign in or create local user.
              var info = await signInManager.GetExternalLoginInfoAsync();
@@ -225,42 +215,6 @@ public static class AuthEndpoints
              return Results.Redirect(returnUrl);
          });*/
 
-        /*        group.MapGet("/login-facebook", async (HttpContext httpContext, string returnUrl = "/") =>
-                {
-                    var properties = new AuthenticationProperties { RedirectUri = returnUrl };
-                    await httpContext.ChallengeAsync(FacebookDefaults.AuthenticationScheme, properties);
-                    //return Challenge(properties, "Facebook");
-                });*/
-
-        /*
-                group.MapGet("/signin-facebook", async (HttpContext httpContext, SignInManager<AppUser> signInManager) =>
-                {
-                    var result = await httpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
-                    if (!result.Succeeded)
-                        return Results.Unauthorized();
-                    var externalUserId = result.Principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                    var email = result.Principal.FindFirst(ClaimTypes.Email)?.Value;
-                    var name = result.Principal.FindFirst(ClaimTypes.Name)?.Value;
-                    var user = await signInManager.UserManager.FindByLoginAsync("Facebook", externalUserId);
-                    if (user == null && email != null)
-                    {
-                        user = await signInManager.UserManager.FindByEmailAsync(email);
-                        if (user == null)
-                        {
-                            user = new AppUser { UserName = name ?? email, Email = email, Rank = 0 };
-                            await signInManager.UserManager.CreateAsync(user);
-                        }
-                        await signInManager.UserManager.AddLoginAsync(user, new UserLoginInfo("Facebook", externalUserId, "Facebook"));
-                    }
-                    if (user != null)
-                    {
-                        await signInManager.SignInAsync(user, isPersistent: true);
-                        await httpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-                        return Results.Ok(new { user.Id, name = user.UserName, role = "Member", user.Rank });
-                    }
-                    return Results.Unauthorized();
-                });
-        */
         return app;
     }
 }

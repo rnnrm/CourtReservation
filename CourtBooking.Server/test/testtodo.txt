@@ -1,1 +1,0 @@
-﻿// TODO: testcase where players separated by one playerand must move rank. winner should move up 2 ranks

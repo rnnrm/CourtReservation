@@ -15,8 +15,5 @@ namespace CourtBooking.Server.Models
         [StringLength(100, MinimumLength = 6)]
         public required string? Password { get; set; }
 
-        //[Required]
-        //[Compare(nameof(Password), ErrorMessage = "Passwords do not match.")]
-        //public string? ConfirmPassword { get; set; }
     }
 }

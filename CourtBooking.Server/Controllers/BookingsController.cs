@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace CourtBooking.Server.Controllers
 {
     [Authorize]
@@ -96,7 +94,7 @@ namespace CourtBooking.Server.Controllers
 
             var userEmail = User.FindFirstValue(ClaimTypes.Email);
             var user = await signInManager.UserManager.FindByEmailAsync(userEmail!);
-            if (user?.Id != reservation.ExtendedProps.Owner && !User.IsInRole("Admin")) //!User.HasClaim(ClaimTypes.Email, reservation.ExtendedProps.Owner) &&
+            if (user?.Id != reservation.ExtendedProps.Owner && !User.IsInRole("Admin"))
                 return Unauthorized();
 
             var existing = await _db.Reservations.FindAsync(reservation.Id);
@@ -111,7 +109,7 @@ namespace CourtBooking.Server.Controllers
             existing.BackgroundColor = reservation.BackgroundColor;
             existing.ExtendedProps.Court = reservation.ExtendedProps.Court;
             existing.ExtendedProps.Description = reservation.ExtendedProps.Description;
-            //existing.ExtendedProps.Owner = reservation.ExtendedProps.Owner;
+            //dont change owner
 
             _db.Reservations.Update(existing);
             await _db.SaveChangesAsync();
@@ -133,7 +131,7 @@ namespace CourtBooking.Server.Controllers
             var userEmail = User.FindFirstValue(ClaimTypes.Email);
             var user = await signInManager.UserManager.FindByEmailAsync(userEmail!);
 
-            if (user?.Id != deleteBookingDto.UserId && !User.IsInRole("Admin")) //!User.HasClaim(ClaimTypes.Email, deleteBookingDto.Email) 
+            if (user?.Id != deleteBookingDto.UserId && !User.IsInRole("Admin"))
                 return Unauthorized();
 
             var existing = await _db.Reservations.FindAsync(deleteBookingDto.BookingId);
