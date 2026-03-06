@@ -1,7 +1,7 @@
 import { useEffect, useState, useActionState } from 'react';
 import Form from 'react-bootstrap/Form';
 import { post } from './Utility.js';
-import { useNavigate } from "react-router";
+import { useNavigate } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 
 const Login = ({ user, setUser }) => {

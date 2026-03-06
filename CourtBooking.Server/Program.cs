@@ -128,6 +128,8 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+await Camera.GetSnapshotURL();
+
 
 static async Task EnsureDatabaseMigratedAsync(WebApplication app)
 {
@@ -176,6 +178,7 @@ static async Task EnsureDatabaseMigratedAsync(WebApplication app)
             await Task.Delay(TimeSpan.FromSeconds(5));
         }
     }
+
 }
 
 app.Run();

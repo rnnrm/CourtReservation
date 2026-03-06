@@ -13,6 +13,7 @@
     <None Include=".env" />
     <None Include=".github\workflows\publish-docker.yml" />
     <None Include=".gitignore" />
+    <None Include="CONTRIBUTING.md" />
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
     </None>
@@ -26,5 +27,7 @@
     <None Include="secrets\email_password.txt" />
     <None Include="secrets\google_client_id.txt" />
     <None Include="secrets\google_client_secret.txt" />
+    <None Include="src\setupTests.js" />
+    <None Include="src\__tests__\sample.test.jsx" />
   </ItemGroup>
 </Project>
