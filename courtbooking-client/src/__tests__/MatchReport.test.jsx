@@ -28,6 +28,6 @@ describe('MatchReport component', () => {
     await userEvent.click(recordButton);
 
     // Modal title
-    //expect(await screen.findByText(/Record match result/i)).toBeInTheDocument();
+    expect(await screen.getByRole('heading', { name: /Record match result/i })).toBeInTheDocument();
   });
 });
