@@ -128,9 +128,6 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-await Camera.GetSnapshotURL();
-
-
 static async Task EnsureDatabaseMigratedAsync(WebApplication app)
 {
     using var scope = app.Services.CreateScope();

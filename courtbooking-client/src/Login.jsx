@@ -152,6 +152,7 @@ const Login = ({ user, setUser }) => {
                 {loginErrorText && <div style={{ color: 'red' }}>{loginErrorText}</div>}
                 <div>{state}</div>
                 <p className="my-3">If you are a member, let a club administrator know your display name after you register so that they can activate your account.</p>
+                <p>Join the club at <a href="https://kenrhoparktennisclub.wordpress.com">Kenrhopark Tennis Club</a></p>
             </Form>
             {users && user &&
                 <div style={{ height: "400px", overflowY: "scroll" }}>

@@ -88,7 +88,7 @@ const MatchReport = ({ user, updateDisplay }) => {
         </Modal>
         <Modal show={show} onHide={handleClose}>
             <Modal.Header closeButton>
-                <Modal.Title>Record match result</Modal.Title>
+                <Modal.Title role="heading" aria-level="1">Record match result</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form action={action}>
