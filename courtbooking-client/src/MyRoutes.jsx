@@ -18,7 +18,7 @@ const MyRoutes = () => {
         const checkLogin = async () => {
 
             try {
-                let response = await fetch('/api/auth/check', { signal: AbortSignal.timeout(10000) });
+                let response = await fetch('/api/auth/check', { signal: AbortSignal.timeout(16000) });
                 if (response.ok || response.status === "401")
                     setOffline(false);
                 if (response.ok) {
