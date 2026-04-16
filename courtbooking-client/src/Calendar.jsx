@@ -172,41 +172,51 @@ export default function Calendar({ user, court }) {
     return (
         <>
             <FullCalendar
-            timeZone='UTC'
-            themeSystem='bootstrap5'
-            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-            initialView="timeGridWeek"
-            //events={events}
-            events={{
-                id: 'backendServerEventSourceId',
-                url: 'api/Bookings',
-                extraParams: {
-                    court: court
-                },
-            }}
-            headerToolbar={{
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay'
-            }}
-            editable={user !== null}
-            selectable={user !== null}
-            select={handleDateSelect}
-            selectMirror={true}
-            //selectAllow={handleAllowSelect}
-            dayMaxEvents={true}
-            longPressDelay={500} //milliseconds
-            //dateClick={handleDateClick}
-            //eventContent={renderEventContent} // custom render function
-            eventClick={handleEventClick}
-            eventAllow={handleEventAllow}
-            eventOverlap={false}// {detectConflicts}
-            //eventsSet={handleEvents} // called after events are initialized/added/changed/removed
-            // you can update a remote database when these fire:
-            eventAdd={v => updateData(v, '+')}
-            eventChange={v => updateData(v, '=')}
-            eventRemove={v => updateData(v, '-')}
-            contentHeight={500}
+                timeZone='UTC'
+                themeSystem='bootstrap5'
+                plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                initialView="timeGridWeek"
+                //events={events}
+                events={{
+                    id: 'backendServerEventSourceId',
+                    url: 'api/Bookings',
+                    extraParams: {
+                        court: court
+                    },
+                }}
+                headerToolbar={{
+                    left: 'prev,next',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                }}
+                editable={user !== null}
+                selectable={user !== null}
+                select={handleDateSelect}
+                selectMirror={true}
+                //selectAllow={handleAllowSelect}
+                dayMaxEvents={true}
+                longPressDelay={500} //milliseconds
+                //dateClick={handleDateClick}
+                //eventContent={renderEventContent} // custom render function
+                eventClick={handleEventClick}
+                eventAllow={handleEventAllow}
+                eventOverlap={false}// {detectConflicts}
+                //eventsSet={handleEvents} // called after events are initialized/added/changed/removed
+                // you can update a remote database when these fire:
+                eventAdd={v => updateData(v, '+')}
+                eventChange={v => updateData(v, '=')}
+                eventRemove={v => updateData(v, '-')}
+                contentHeight={500}
+                firstDay="1"
+                slotMinTime="05:00:00"
+                slotMaxTime="19:00:00"
+                views={
+                    {
+                        week: {
+                            dayHeaderFormat: { weekday: 'short' }
+                    }}
+                }
+                
             //selectOverlap={detectConflicts}
             />
         </>
