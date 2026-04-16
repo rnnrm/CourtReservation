@@ -1,10 +1,10 @@
 
 import { useActionState } from 'react';
-import { useNavigate } from "react-router";;
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { post } from './Utility.js';
-import { useSearchParams } from "react-router";
+import { useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 
 const ResetPassword = () => {
 

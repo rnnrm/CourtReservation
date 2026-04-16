@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace CourtBooking.Server.Controllers
 {
     public record UserViewModel(string Name, string Id, string[] Roles, int? MemberNumber);
@@ -76,11 +74,6 @@ namespace CourtBooking.Server.Controllers
             if (await userManager.IsInRoleAsync(currentUser!, p.Role))
             {
                 roleresult = await userManager.RemoveFromRoleAsync(currentUser!, p.Role);
-                /*if (p.Role == "Member")
-                {
-                    RemoveRank(currentUser);
-                    await _userManager.UpdateAsync(currentUser);
-                }*/
             }
             else
             {
@@ -91,17 +84,6 @@ namespace CourtBooking.Server.Controllers
                     var memberRole = await roleManager.FindByNameAsync("Member");
                     if (memberRole != null)
                     {
-                        /*// Query AspNetUserRoles for user ids that have the Member role
-                        var memberUserIds = db.Set<IdentityUserRole<string>>()
-                                              .Where(ur => ur.RoleId == memberRole.Id)
-                                              .Select(ur => ur.UserId);
-
-                        // Compute max rank among those users (exclude nulls)
-                        var maxRank = await db.Users
-                                              .Where(u => memberUserIds.Contains(u.Id))
-                                              .MaxAsync(u => (int?)u.Rank) ?? 0;
-
-                        currentUser.Rank = maxRank + 1;*/
                         //generate member number
                         if (currentUser.MemberNumber == null)
                         {
@@ -124,8 +106,6 @@ namespace CourtBooking.Server.Controllers
             var user = await userManager.FindByIdAsync(Id);
             if (user != null)
             {
-                //RemoveRank(user);
-
                 //delete users reservaions
                 db.RemoveRange(db.Reservations.Where(r => r.ExtendedProps.Owner == user.Id));
 

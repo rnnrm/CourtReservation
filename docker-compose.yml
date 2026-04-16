@@ -21,6 +21,8 @@ services:
       - google_client_id
       - google_client_secret
       - email_password
+      - admin_password
+      - admin_email
       - source: certificate_password
         target: Kestrel__Certificates__Default__Password
 
@@ -33,3 +35,7 @@ secrets:
     file: ./secrets/certificate_password.txt
   email_password:
     file: ./secrets/email_password.txt
+  admin_password:
+    file: ./secrets/admin_password.txt
+  admin_email:
+    file: ./secrets/admin_email.txt

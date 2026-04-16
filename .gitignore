@@ -93,3 +93,6 @@ secrets/
 /secrets/certificate_password.txt
 /secrets/google_client_id.txt
 /secrets/google_client_secret.txt
+/secrets/admin_password.txt
+
+/CourtBooking.Server/Camera.cs

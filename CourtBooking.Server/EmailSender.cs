@@ -29,7 +29,7 @@ namespace CourtBooking.Server
                     From = Username;
                 var message = new MimeMessage();
                 message.From.Add(new MailboxAddress("KenRho site", From));
-                message.To.Add(new MailboxAddress("UUser", To));
+                message.To.Add(new MailboxAddress("User", To));
                 message.Subject = Subject;
 
                 message.Body = new TextPart("plain")

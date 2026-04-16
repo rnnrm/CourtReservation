@@ -1,7 +1,7 @@
 import { useEffect, useState, useActionState } from 'react';
 import Form from 'react-bootstrap/Form';
 import { post } from './Utility.js';
-import { useNavigate } from "react-router";
+import { useNavigate } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 
 const Login = ({ user, setUser }) => {
@@ -103,7 +103,7 @@ const Login = ({ user, setUser }) => {
         if (response.ok)
             alert("Email with reset link was sent to: " + email);
         else
-            alert("No registered user with that email.");
+            alert(response);
     }
 
     return (
@@ -152,6 +152,7 @@ const Login = ({ user, setUser }) => {
                 {loginErrorText && <div style={{ color: 'red' }}>{loginErrorText}</div>}
                 <div>{state}</div>
                 <p className="my-3">If you are a member, let a club administrator know your display name after you register so that they can activate your account.</p>
+                <p>Join the club at <a href="https://kenrhoparktennisclub.wordpress.com">Kenrhopark Tennis Club</a></p>
             </Form>
             {users && user &&
                 <div style={{ height: "400px", overflowY: "scroll" }}>

@@ -53,6 +53,16 @@ export default defineConfig(({ command }) => {
 
     return {
         plugins: [plugin()],
+        test: {
+            environment: 'jsdom',
+            globals: true,
+            setupFiles: './src/setupTests.js',
+            include: ['src/**/*.{test,spec}.{js,jsx,ts,tsx}'],
+            coverage: {
+                reporter: ['text', 'lcov'],
+                exclude: ['node_modules/', 'dist/']
+            }
+        },
         resolve: {
             alias: {
                 '@': fileURLToPath(new URL('./src', import.meta.url))

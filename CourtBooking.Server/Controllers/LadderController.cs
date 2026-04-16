@@ -1,10 +1,7 @@
-﻿using CourtBooking.Server.Migrations;
-using CourtBooking.Server.Models;
+﻿using CourtBooking.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
-using System.Numerics;
 using System.Security.Claims;
 
 namespace CourtBooking.Server.Controllers
@@ -113,12 +110,6 @@ namespace CourtBooking.Server.Controllers
                 var ReportedBy = winners;
                 if (lose > win)
                     ReportedBy = losers;
-        /*        Console.WriteLine($"p.Partner: {p.Partner}, winners {winners.Id}, Losers: {losers.Id}");
-                var ReportedBy = db.Competitors.Where(c =>
-                    c.Competition.ToLower() == p.CompetitionName.ToLower()
-                    && c.Players.Any(pl => pl.Id == loggedInUser.Id)
-                    && (!doubles || c.Players.Any(pl => pl.Id == p.Partner))
-                ).First();*/
 
                 //find other players' reported match result
                 var match = db.MatchResults.Where(match =>
@@ -220,10 +211,12 @@ namespace CourtBooking.Server.Controllers
         }
 
         [HttpGet("PendingResults")]
-        public IActionResult GetPendingResults([FromServices] ApplicationDbContext db, [FromQuery] string competitionName)
+        public async Task<IActionResult> GetPendingResults([FromServices] ApplicationDbContext db, [FromQuery] string competitionName)
         {
             var Id = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            var loggedInUser =  _userManager.FindByIdAsync(Id!).Result!;
+            var loggedInUser = await _userManager.FindByIdAsync(Id!);
+            if (loggedInUser == null) return Unauthorized();
+
             var matches = db.MatchResults.Where(m => !m.Confirmed &&
             (m.CompetitionName == competitionName) &&
             (m.Winner.Players.Any(p => p.Id == loggedInUser.Id) ||
@@ -254,11 +247,12 @@ namespace CourtBooking.Server.Controllers
 
             if (string.IsNullOrWhiteSpace(competitionName))
                 return BadRequest("competitionName is required.");
+            int resultsToShow = 50;
 
             var matches = db.MatchResults.Where(m => m.Confirmed && 
             (m.CompetitionName == competitionName))
                 .OrderByDescending(m => m.DatePlayed)
-                .Take(50)
+                .Take(resultsToShow)
                 .Select(m => new
             {
                 Winner1 = m.Winner.Players.First().UserName,
@@ -270,37 +264,6 @@ namespace CourtBooking.Server.Controllers
                 PointsChange = Math.Round(m.PointsChange, 1)
                 }
             );
-
-  /*          var nameLower = competitionName.ToLowerInvariant();
-
-            // Project only simple, translatable fields and player lists, then materialize.
-            var projected = await db.MatchResults
-                .Where(m => m.Confirmed && m.CompetitionName != null && m.CompetitionName.ToLower() == nameLower)
-                .OrderByDescending(m => m.DatePlayed)
-                .Take(5)
-                .Select(m => new
-                {
-                    WinnerUserNames = m.Winner.Players.Select(p => p.UserName).ToArray(),
-                    LoserUserNames = m.Loser.Players.Select(p => p.UserName).ToArray(),
-                    WinnerType = m.Winner.Type,
-                    LoserType = m.Loser.Type,
-                    m.Score,
-                    m.DatePlayed,
-                    m.PointsChange
-                })
-                .ToListAsync();
-
-            var match = projected.Select(m => new
-            {
-                Winner1 = m.WinnerUserNames.FirstOrDefault(),
-                Winner2 = string.Equals(m.WinnerType, "Doubles", StringComparison.OrdinalIgnoreCase) ? m.WinnerUserNames.Skip(1).FirstOrDefault() : null,
-                Loser1 = m.LoserUserNames.FirstOrDefault(),
-                Loser2 = string.Equals(m.LoserType, "Doubles", StringComparison.OrdinalIgnoreCase) ? m.LoserUserNames.Skip(1).FirstOrDefault() : null,
-                Score = FormatScore(m.Score),
-                DatePlayed = m.DatePlayed.ToShortDateString(),
-                PointsChange = Math.Round(m.PointsChange, 1)
-            });*/
-
 
             return Ok(matches);
         }
