@@ -217,7 +217,7 @@ export default function Calendar({ user, court }) {
                     }}
                 }
                 
-            //selectOverlap={detectConflicts}
+                //selectOverlap={detectConflicts}
             />
         </>
     )

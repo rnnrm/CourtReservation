@@ -211,10 +211,12 @@ namespace CourtBooking.Server.Controllers
         }
 
         [HttpGet("PendingResults")]
-        public IActionResult GetPendingResults([FromServices] ApplicationDbContext db, [FromQuery] string competitionName)
+        public async Task<IActionResult> GetPendingResults([FromServices] ApplicationDbContext db, [FromQuery] string competitionName)
         {
             var Id = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            var loggedInUser =  _userManager.FindByIdAsync(Id!).Result!;
+            var loggedInUser = await _userManager.FindByIdAsync(Id!);
+            if (loggedInUser == null) return Unauthorized();
+
             var matches = db.MatchResults.Where(m => !m.Confirmed &&
             (m.CompetitionName == competitionName) &&
             (m.Winner.Players.Any(p => p.Id == loggedInUser.Id) ||
@@ -245,11 +247,12 @@ namespace CourtBooking.Server.Controllers
 
             if (string.IsNullOrWhiteSpace(competitionName))
                 return BadRequest("competitionName is required.");
+            int resultsToShow = 50;
 
             var matches = db.MatchResults.Where(m => m.Confirmed && 
             (m.CompetitionName == competitionName))
                 .OrderByDescending(m => m.DatePlayed)
-                .Take(50)
+                .Take(resultsToShow)
                 .Select(m => new
             {
                 Winner1 = m.Winner.Players.First().UserName,

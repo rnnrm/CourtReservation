@@ -5,6 +5,8 @@ using CourtBooking.Server.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
+using CourtBooking.Server.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 // Add Docker secrets directory if it exists
 var secretsPath = "/run/secrets";
@@ -12,6 +14,8 @@ if (Directory.Exists(secretsPath))
 {
     builder.Configuration.AddKeyPerFile(directoryPath: secretsPath, optional: true);
 }
+
+builder.Services.AddHostedService<PrunePendingMatchesService>();
 
 // Add services to the container.
 builder.Services.AddSingleton<EmailSender>(sp => new EmailSender(
