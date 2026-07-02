@@ -57,7 +57,7 @@ const MatchReport = ({ user, updateDisplay }) => {
         var _score = score.slice(0, sets * 2);
         if (!opponent) { setError("No opponent selected"); return; }
         setLoading(true);
-        let response = await post('/api/ladder',
+        let response = await post('/api/Ladder',
             {
                 CompetitionName: competitionName,
                 Opponent: opponent.id,

@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Map existing tables used by Ladder/Auth
+model AppUser {
+  Id                 String  @id @map("Id")
+  UserName           String? @map("UserName")
+  NormalizedUserName String? @map("NormalizedUserName")
+  Email              String? @map("Email")
+  NormalizedEmail    String? @map("NormalizedEmail")
+  PasswordHash       String? @map("PasswordHash")
+  SecurityStamp      String? @map("SecurityStamp")
+  MemberNumber       Int?    @map("MemberNumber")
+
+  // Relations
+  reservations Reservation[]    @relation("OwnerReservations")
+  userRoles    UserRole[]
+
+  @@map("Users")
+}
+
+model Role {
+  Id               String  @id @map("Id")
+  Name             String? @map("Name")
+  NormalizedName   String? @map("NormalizedName")
+  ConcurrencyStamp String? @map("ConcurrencyStamp")
+
+  userRoles UserRole[]
+
+  @@map("Roles")
+}
+
+model UserRole {
+  UserId String @map("UserId")
+  RoleId String @map("RoleId")
+
+  user AppUser    @relation(fields: [UserId], references: [Id])
+  role Role @relation(fields: [RoleId], references: [Id])
+
+  @@id([UserId, RoleId])
+  @@map("UserRoles")
+}
+
+model Reservation {
+  Id              String    @id @map("Id")
+  Title           String?   @map("Title")
+  Start           DateTime? @map("Start") @db.Timestamptz
+  End             DateTime? @map("End") @db.Timestamptz
+  Date            DateTime? @map("Date") @db.Timestamptz
+  AllDay          Boolean?  @map("AllDay")
+  ClassName       String?   @map("ClassName")
+  BackgroundColor String?   @map("BackgroundColor")
+  ownerId         String?   @map("ExtendedProps_Owner")
+  court           Int?      @map("ExtendedProps_Court")
+  Description     String?   @map("ExtendedProps_Description")
+
+  owner AppUser? @relation("OwnerReservations", fields: [ownerId], references: [Id])
+
+  @@map("Reservations")
+}
+
+// Ladder / competition models
+model Competitor {
+  Id            String @id @map("Id")
+  Rating        Float  @map("Rating")
+  Rank          Int?   @map("Rank")
+  Type          String @map("Type")
+  Competition   String @map("Competition")
+  MatchesPlayed Int    @map("MatchesPlayed")
+
+  @@map("Competitors")
+}
+
+model MatchResult {
+  Id              String   @id @map("Id")
+  CompetitionName String   @map("CompetitionName")
+  WinnerId        String   @map("WinnerId")
+  LoserId         String   @map("LoserId")
+  ReportedById    String   @map("ReportedById")
+  DatePlayed      DateTime @map("DatePlayed") @db.Timestamptz
+  Score           Int[]    @map("Score")
+  Confirmed       Boolean  @map("Confirmed")
+  PointsChange    Float    @map("PointsChange")
+
+  @@map("MatchResults")
+}
+
+model CompetitorPlayer {
+  CompetitorId String @map("CompetitorId")
+  AppUserId    String @map("AppUserId")
+
+  @@id([CompetitorId, AppUserId])
+  @@map("CompetitorPlayers")
+}
+
+
+//for converting
+model NodeUser {
+  id           String   @id @default(cuid())
+  UserId String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now()) @db.Timestamptz
+
+  @@map("NodeUsers")
+}

@@ -96,3 +96,5 @@ secrets/
 /secrets/admin_password.txt
 
 /CourtBooking.Server/Camera.cs
+/courtbooking-server/data dump
+/postgres_migration

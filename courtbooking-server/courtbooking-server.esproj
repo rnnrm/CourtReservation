@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.2752196">
+  <PropertyGroup>
+    <BuildCommand>
+    </BuildCommand>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove=".next\**" />
+    <None Remove="next-app\**" />
+    <None Remove="public\**" />
+    <TypeScriptConfiguration Remove=".next\**" />
+    <TypeScriptConfiguration Remove="next-app\**" />
+    <TypeScriptConfiguration Remove="public\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="prisma\schema.prisma" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptConfiguration Remove="tsconfig.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="tsconfig.json" />
+  </ItemGroup>
+</Project>
