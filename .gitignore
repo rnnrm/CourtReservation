@@ -98,3 +98,4 @@ secrets/
 /CourtBooking.Server/Camera.cs
 /courtbooking-server/data dump
 /postgres_migration
+/courtbooking-server/datadump
