@@ -4,7 +4,8 @@ const nextConfig: NextConfig = {
         // relative to this config file
         root: 'C:/myne/code/dotnet/v9/CourtBooking/courtbooking-server',
     },
-  /* config options here */
+    staticPageGenerationTimeout: 120,
+    /* config options here */
 };
 
 export default nextConfig;
