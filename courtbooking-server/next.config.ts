@@ -1,10 +1,11 @@
 import type { NextConfig } from "next";
+import path from "path";
+
 const nextConfig: NextConfig = {
+    outputFileTracingRoot: path.join(__dirname),
     turbopack: {
-        root: '.',
-    },
-    staticPageGenerationTimeout: 120,
-    /* config options here */
+        root: path.join(__dirname),
+    }
 };
 
 export default nextConfig;
