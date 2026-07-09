@@ -76,7 +76,7 @@ export async function POST(req: Request) {
         select: { CompetitorId: true },
       });
       if (candEntries.length === 0) return null;
-      const candidateIds = candEntries.map(e => e.CompetitorId);
+      const candidateIds = candEntries.map((e: any) => e.CompetitorId);
 
       if (playerB) {
         for (const cid of candidateIds) {

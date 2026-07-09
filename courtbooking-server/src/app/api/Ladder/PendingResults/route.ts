@@ -11,23 +11,23 @@ export async function GET(req: Request) {
   });
 
   const result = await Promise.all(
-    pending.map(async m => {
+    pending.map(async (m: any) => {
       // winner players
       const winnerPlayers = await prisma.competitorPlayer.findMany({ where: { CompetitorId: m.WinnerId } });
       const winnerNames = await Promise.all(
-        winnerPlayers.map(async wp => (await prisma.appUser.findUnique({ where: { Id: wp.AppUserId } }))?.UserName ?? null)
+        winnerPlayers.map(async (wp: any) => (await prisma.appUser.findUnique({ where: { Id: wp.AppUserId } }))?.UserName ?? null)
       );
 
       // loser players
       const loserPlayers = await prisma.competitorPlayer.findMany({ where: { CompetitorId: m.LoserId } });
       const loserNames = await Promise.all(
-        loserPlayers.map(async lp => (await prisma.appUser.findUnique({ where: { Id: lp.AppUserId } }))?.UserName ?? null)
+        loserPlayers.map(async (lp: any) => (await prisma.appUser.findUnique({ where: { Id: lp.AppUserId } }))?.UserName ?? null)
       );
 
       // reported by players (competitor that reported)
       const reportedPlayers = await prisma.competitorPlayer.findMany({ where: { CompetitorId: m.ReportedById } });
       const reportedNames = await Promise.all(
-        reportedPlayers.map(async rp => (await prisma.appUser.findUnique({ where: { Id: rp.AppUserId } }))?.UserName ?? null)
+        reportedPlayers.map(async (rp: any) => (await prisma.appUser.findUnique({ where: { Id: rp.AppUserId } }))?.UserName ?? null)
       );
 
       const reportedBy =

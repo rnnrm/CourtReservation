@@ -21,7 +21,7 @@ export async function GET(req: Request) {
     result[u.Id] = {
       name: u.UserName ?? null,
       id: u.Id,
-      roles: roles.map(r => r.role?.Name).filter(Boolean),
+      roles: roles.map((r: any) => r.role?.Name).filter(Boolean),
       memberNumber: u.MemberNumber ?? null
     };
   }

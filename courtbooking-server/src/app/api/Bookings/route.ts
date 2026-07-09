@@ -46,7 +46,7 @@ export async function GET(req: Request) {
   });
 
   // Use Date objects for filtering, then convert for output
-  const reservationsRaw = rows.map((r) => ({
+  const reservationsRaw = rows.map((r: any) => ({
     Id: r.Id,
     Title: r.Title ?? "",
     Start: r.Start ?? null,
@@ -67,7 +67,7 @@ export async function GET(req: Request) {
   const startDt = start ? new Date(start) : null;
   const endDt = end ? new Date(end) : null;
 
-  const filteredRaw = reservationsRaw.filter((r) => {
+  const filteredRaw = reservationsRaw.filter((r: any) => {
     const reservationStart = (r.Start as Date | null) ?? (r.Date as Date | null);
     const reservationEnd =
       (r.End as Date | null) ?? (r.Date as Date | null) ?? reservationStart;

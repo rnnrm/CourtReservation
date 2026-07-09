@@ -34,7 +34,7 @@ export async function POST(req: Request) {
     where: { UserId: aspUser.Id },
     include: { role: true },
   });
-  const roleNames = roles.map(r => r.role?.Name).filter(Boolean) as string[];
+  const roleNames = roles.map((r: any) => r.role?.Name).filter(Boolean) as string[];
   var role = roleNames.includes("Admin") ? "Admin" : roleNames.includes("Member") ? "Member" : "Guest";
       const token = signToken({ sub: aspUser.Id, name: aspUser.UserName, securityStamp: aspUser.SecurityStamp });
       const res = NextResponse.json({ id: aspUser.Id, name: aspUser.UserName, role: role, MemberNumber: aspUser.MemberNumber });
@@ -73,7 +73,7 @@ export async function POST(req: Request) {
     where: { UserId: aspUser.Id },
     include: { role: true },
   });
-  const roleNames = roles.map(r => r.role?.Name).filter(Boolean) as string[];
+  const roleNames = roles.map((r: any) => r.role?.Name).filter(Boolean) as string[];
   var role = roleNames.includes("Admin") ? "Admin" : roleNames.includes("Member") ? "Member" : "Guest";
   const token = signToken({ sub: aspUser.Id, name: aspUser.UserName, securityStamp: aspUser.SecurityStamp });
   const res = NextResponse.json({ id: aspUser.Id, name: aspUser.UserName, role: role, MemberNumber: aspUser.MemberNumber });

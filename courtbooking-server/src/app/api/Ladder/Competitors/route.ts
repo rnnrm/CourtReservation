@@ -14,10 +14,10 @@ export async function GET(req: Request) {
     orderBy: { Rating: "desc" },
   });
 
-  const result = await Promise.all(competitors.map(async (c) => {
+  const result = await Promise.all(competitors.map(async (c: any) => {
     // fetch player ids for this competitor
     const players = await prisma.competitorPlayer.findMany({ where: { CompetitorId: c.Id } });
-    const playerUsers = await Promise.all(players.map(async (p) => {
+    const playerUsers = await Promise.all(players.map(async (p: any) => {
       const u = await prisma.appUser.findUnique({ where: { Id: p.AppUserId } });
       return { id: p.AppUserId, userName: u?.UserName ?? null };
     }));

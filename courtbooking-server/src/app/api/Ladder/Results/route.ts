@@ -17,13 +17,13 @@ export async function GET(req: Request) {
     take: 50
   });
 
-  const result = await Promise.all(matches.map(async (m) => {
+  const result = await Promise.all(matches.map(async (m: any) => {
     // winner players
     const winnerPlayers = await prisma.competitorPlayer.findMany({ where: { CompetitorId: m.WinnerId } });
-    const winnerNames = await Promise.all(winnerPlayers.map(async wp => (await prisma.appUser.findUnique({ where: { Id: wp.AppUserId } }))?.UserName));
+    const winnerNames = await Promise.all(winnerPlayers.map(async (wp: any) => (await prisma.appUser.findUnique({ where: { Id: wp.AppUserId } }))?.UserName));
     // loser players
     const loserPlayers = await prisma.competitorPlayer.findMany({ where: { CompetitorId: m.LoserId } });
-    const loserNames = await Promise.all(loserPlayers.map(async lp => (await prisma.appUser.findUnique({ where: { Id: lp.AppUserId } }))?.UserName));
+    const loserNames = await Promise.all(loserPlayers.map(async (lp: any) => (await prisma.appUser.findUnique({ where: { Id: lp.AppUserId } }))?.UserName));
 
     return {
       winner1: winnerNames[0] ?? null,
