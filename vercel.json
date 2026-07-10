@@ -1,17 +1,6 @@
 {
   "version": 2,
   "builds": [
-    {
-      "src": "courtbooking-client/package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
-    },
     { "src": "courtbooking-server/package.json", "use": "@vercel/next" }
-  ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/courtbooking-server/api/$1" },
-    { "src": "/_next/(.*)", "dest": "/courtbooking-server/_next/$1" },
-    { "src": "/static/(.*)", "dest": "/courtbooking-server/public/$1" },
-    { "src": "/(.*)", "dest": "/courtbooking-server" }
   ]
 }
