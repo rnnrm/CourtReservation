@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev -p 32771",
     "build": "next build",
-    "vercel-build": "NPM_CONFIG_PRODUCTION=false npm --prefix ../courtbooking-client ci && npm --prefix ../courtbooking-client run build && mkdir -p public && cp -r ../courtbooking-client/dist/. public/ && npx prisma generate && next build",
+    "vercel-build": "NPM_CONFIG_PRODUCTION=false npm --prefix ../courtbooking-client ci && npm --prefix ../courtbooking-client run build && mkdir -p public && cp -r ../courtbooking-client/dist/. public/ && npx prisma generate && next build && mkdir -p .next && if [ -f /vercel/output/routes-manifest-deterministic.json ]; then cp /vercel/output/routes-manifest-deterministic.json .next/; fi && if [ -f ./vercel/output/routes-manifest-deterministic.json ]; then cp ./vercel/output/routes-manifest-deterministic.json .next/; fi && ls -la . && ls -la .next && ls -la /vercel || true",
     "start": "next start",
     "lint": "eslint"
   },
@@ -30,7 +30,7 @@
     "@types/nodemailer": "^8.0.1",
     "@types/pg": "^8.20.0",
     "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/react-dom": "19",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
     "prisma": "^7.8.0",
