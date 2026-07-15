@@ -1,13 +1,10 @@
 #!/usr/bin/env node
-/**
- * Cross-platform script to ensure courtbooking-client dev deps are installed
- * and then run its build. Exits non-zero on failure.
- */
-
 import { spawnSync } from "child_process";
 import path from "path";
+import fs from "fs";
 
 const clientDir = path.resolve(process.cwd(), "../courtbooking-client");
+const viteBin = path.join(clientDir, "node_modules", ".bin", "vite");
 
 function run(cmd, args, opts = {}) {
   const res = spawnSync(cmd, args, { stdio: "inherit", shell: true, ...opts });
@@ -15,16 +12,30 @@ function run(cmd, args, opts = {}) {
   if (res.status !== 0) throw new Error(`Command failed: ${cmd} ${args.join(" ")}`);
 }
 
-try {
-  // Prefer a clean ci; if CI runs in production mode and doesn't install devDeps,
-  // npm ci might still succeed but won't provide build tools. We try ci first,
-  // then explicitly install with dev deps if needed.
+function exists(p) {
   try {
-    console.log("-> npm ci (client)");
+    return fs.existsSync(p);
+  } catch {
+    return false;
+  }
+}
+
+try {
+  console.log("-> npm ci (client)");
+  // Try a clean CI install first
+  try {
     run("npm", ["--prefix", clientDir, "ci"]);
   } catch (ciErr) {
-    console.warn("npm ci failed, falling back to install with dev deps:", ciErr.message);
+    console.warn("npm ci failed, falling back to npm install --include=dev:", ciErr.message);
     run("npm", ["--prefix", clientDir, "install", "--include=dev"]);
+  }
+
+  // If vite binary does not exist, install dev deps explicitly
+  if (!exists(viteBin)) {
+    console.log("vite binary not found after npm ci — installing devDependencies for client");
+    run("npm", ["--prefix", clientDir, "install", "--include=dev"]);
+  } else {
+    console.log("vite binary found.");
   }
 
   console.log("-> npm run build (client)");
