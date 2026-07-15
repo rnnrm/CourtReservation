@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build:client": "npm --prefix ../courtbooking-client ci --silent || npm --prefix ../courtbooking-client install --include=dev --silent && npm --prefix ../courtbooking-client run build --silent",
+    "build:client": "node ./scripts/build-client.js",
     "copy-client": "node ./scripts/copy-dist.js",
     "prisma:generate": "npx prisma generate",
     "cleanup": "node ./scripts/cleanup.js",
