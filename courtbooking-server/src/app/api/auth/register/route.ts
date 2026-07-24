@@ -49,10 +49,10 @@ export async function POST(req: Request) {
     const name = (body?.Name ?? "").toString();
     const password = body?.Password?.toString();
 
-    if (!email || !password) return new Response("Email and Password required", { status: 400, headers: { "content-type": "text/plain" } });
+    if (!email || !password) return NextResponse.json({ error: "Email and Password required" }, { status: 400 });
 
     const existing = await prisma.appUser.findFirst({ where: { Email: email } });
-    if (existing) return new Response("User already exists", { status: 409, headers: { "content-type": "text/plain" } });
+    if (existing) return NextResponse.json({ error: "User already exists" }, { status: 409 });
 
     // Hash password using ASP.NET Identity format
     const hash = hashPassword(password);
@@ -84,6 +84,6 @@ export async function POST(req: Request) {
     res.headers.set("Set-Cookie", setTokenCookieStr(token));
     return res;
   } catch (err: any) {
-    return new Response(err?.message ?? "Server error", { status: 500, headers: { "content-type": "text/plain" } });
+    return NextResponse.json({ error: err?.message ?? "Server error" }, { status: 500 });
   }
 }

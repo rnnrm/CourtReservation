@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyToken } from "@/utils/jwt";
-import {hashPassword} from "@/utils/hashing";
+import argon2 from "argon2";
 
 function base64UrlDecode(input: string) {
   // pad and replace url-safe chars
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     const encodedToken = body?.ResetToken;
     const newPassword = body?.NewPassword?.toString();
 
-    if (!encodedEmail || !encodedToken || !newPassword) return new Response("Missing fields", { status: 400, headers: { "content-type": "text/plain" } });
+    if (!encodedEmail || !encodedToken || !newPassword) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
 
     const email = base64UrlDecode(encodedEmail);
     const token = base64UrlDecode(encodedToken);
@@ -26,20 +26,21 @@ export async function POST(req: Request) {
     try {
       payload = verifyToken(token) as any;
     } catch {
-      return new Response("Invalid or expired token", { status: 400, headers: { "content-type": "text/plain" } });
+      return NextResponse.json({ error: "Invalid or expired token" }, { status: 400 });
     }
 
     if (payload?.purpose !== "reset" || payload?.email?.toString().toLowerCase() !== email.toLowerCase())
-      return new Response("Invalid token", { status: 400, headers: { "content-type": "text/plain" } });
+      return NextResponse.json({ error: "Invalid token" }, { status: 400 });
 
     const user = await prisma.appUser.findFirst({ where: { Email: email } });
-    if (!user) return new Response("User not found", { status: 404, headers: { "content-type": "text/plain" } });
+    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-    const hash = hashPassword(newPassword);
-    await prisma.appUser.update({ where: { Id: user.Id }, data: { PasswordHash: hash } });
+    //const hash = hashPassword(newPassword);
+    const newHash = await argon2.hash(newPassword);
+    await prisma.nodeUser.update({ where: { UserId: user.Id }, data: { passwordHash: newHash } });
 
     return NextResponse.json({ ok: true });
   } catch (err: any) {
-    return new Response(err?.message ?? "Server error", { status: 500, headers: { "content-type": "text/plain" } });
+    return NextResponse.json({ error: err?.message ?? "Server error" }, { status: 500 });
   }
 }

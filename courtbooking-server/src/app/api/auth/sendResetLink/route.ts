@@ -11,10 +11,10 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const email = body?.userEmail?.toString().trim().toLowerCase();
-    if (!email) return new Response("Email required", { status: 400, headers: { "content-type": "text/plain" } });
+    if (!email) return NextResponse.json({ error: "Email required" }, { status: 400 });
 
     const user = await prisma.appUser.findFirst({ where: { Email: email } });
-    if (!user) return new Response("Not found", { status: 404, headers: { "content-type": "text/plain" } });
+    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
     // create short-lived reset token
     const resetToken = signToken({ sub: user.Id, email: user.Email, purpose: "reset" }, "1h");
@@ -34,8 +34,8 @@ export async function POST(req: Request) {
       }});
       
         let message = `Reset password was requested from ${frontend}
-        \nCopy (or click) this address fully into your browser to change your password:\n\n
-        ${resetUrl}`;
+        \nCopy (or click) this address fully into your browser to change your password:
+        \n\n${resetUrl}`;
 
       await transporter.sendMail({
         to: user.Email!,
@@ -51,6 +51,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true });
     
   } catch (err: any) {
-    return new Response(err?.message ?? "Server error", { status: 500, headers: { "content-type": "text/plain" } });
+    return NextResponse.json({ error: err?.message ?? "Server error" }, { status: 500 });
   }
 }

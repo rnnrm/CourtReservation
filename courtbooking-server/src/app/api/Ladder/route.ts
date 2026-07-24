@@ -27,11 +27,11 @@ function updatePointsAndPersist(winner: any, loser: any) {
 export async function POST(req: Request) {
   try {
     const session = await getSessionUser(req);
-    if (!session) return new Response("Unauthorized", { status: 401, headers: { "content-type": "text/plain" } });
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const userId = session.id;
 
     const body = await req.json();
-    if (!body) return new Response("Missing body", { status: 400, headers: { "content-type": "text/plain" } });
+    if (!body) return NextResponse.json({ error: "Missing body" }, { status: 400 });
 
     // prune unconfirmed matches older than 14 days
     const cutoff = new Date();
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
     // parse input
     const pCompetition = body.CompetitionName ?? "Ladder";
     const pScore: number[] = Array.isArray(body.Score) ? body.Score.map(Number) : [];
-    if (pScore.length % 2 === 1) return new Response("Invalid score array", { status: 400, headers: { "content-type": "text/plain" } });
+    if (pScore.length % 2 === 1) return NextResponse.json({ error: "Invalid score array" }, { status: 400 });
 
     // calculate wins vs losses
     let win = 0, lose = 0;
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
       if (a > b) win++;
       else if (a < b) lose++;
     }
-    if (win === lose) return new Response("Invalid score (tie)", { status: 400, headers: { "content-type": "text/plain" } });
+    if (win === lose) return NextResponse.json({ error: "Invalid score (tie)" }, { status: 400 });
 
     const doubles = !!(body.Partner && body.Opponent2);
     let Winner1 = userId;
@@ -233,6 +233,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ status: "Updated", matchId }, { status: 200 });
     }
   } catch (err: any) {
-    return new Response(err?.message ?? "Server error", { status: 500, headers: { "content-type": "text/plain" } });
+    return NextResponse.json({ error: err?.message ?? "Server error" }, { status: 500 });
   }
 }

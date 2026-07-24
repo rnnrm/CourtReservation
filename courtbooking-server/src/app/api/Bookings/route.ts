@@ -92,7 +92,7 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   const body = await req.json();
-  if (!body) return new Response("Bad Request", { status: 400, headers: { "content-type": "text/plain" } });
+  if (!body) return NextResponse.json({ error: "Bad Request" }, { status: 400 });
 
   const created = await prisma.reservation.create({
     data: {
@@ -116,17 +116,17 @@ export async function POST(req: Request) {
 
 export async function PUT(req: Request) {
   const body = await req.json();
-  if (!body || !body.Id) return new Response("Bad Request", { status: 400, headers: { "content-type": "text/plain" } });
+  if (!body || !body.Id) return NextResponse.json({ error: "Bad Request" }, { status: 400 });
 
   const session = await getSessionUser(req);
-  if (!session) return new Response("Unauthorized", { status: 403, headers: { "content-type": "text/plain" } });
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const existing = await prisma.reservation.findUnique({ where: { Id: body.Id } });
-  if (!existing) return new Response("Not found", { status: 404, headers: { "content-type": "text/plain" } });
+  if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const isOwner = existing.ownerId === session.id;
   const isAdmin = session.roles.includes("Admin");
-  if (!isOwner && !isAdmin) return new Response("Unauthorized", { status: 403, headers: { "content-type": "text/plain" } });
+  if (!isOwner && !isAdmin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const updated = await prisma.reservation.update({
     where: { Id: body.Id },
@@ -149,18 +149,18 @@ export async function PUT(req: Request) {
 export async function DELETE(req: Request) {
   const body = await req.json();
   const bookingId = body?.BookingId ?? body?.Id;
-  if (!bookingId) return new Response("BookingId required", { status: 400, headers: { "content-type": "text/plain" } });
+  if (!bookingId) return NextResponse.json({ error: "BookingId required" }, { status: 400 });
 
   const session = await getSessionUser(req);
-  if (!session) return new Response("Unauthorized", { status: 403, headers: { "content-type": "text/plain" } });
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   const existing = await prisma.reservation.findUnique({ where: { Id: bookingId } });
-  if (!existing) return new Response("Not found", { status: 404, headers: { "content-type": "text/plain" } });
+  if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const isOwner = existing.ownerId === session.id;
   const isAdmin = session.roles.includes("Admin");
-  if (!isOwner && !isAdmin) return new Response("Unauthorized", { status: 403, headers: { "content-type": "text/plain" } });
+  if (!isOwner && !isAdmin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
   await prisma.reservation.delete({ where: { Id: bookingId } });
-  return new Response(null, { status: 204 });
+  return NextResponse.json({ message: "Booking deleted" }, { status: 204 });
 }

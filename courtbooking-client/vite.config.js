@@ -17,7 +17,7 @@ const certFilePath = path.join(baseFolder, `${certificateName}.pem`);
 const keyFilePath = path.join(baseFolder, `${certificateName}.key`);
 
 const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}` :
-    env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : 'http://localhost:32771';
+    env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : env.VITE_DEV_SERVER_PORT ? `http://localhost:${env.VITE_DEV_SERVER_PORT}` : 'http://localhost:32771';
 
 // https cert creation should only run for the local dev server
 export default defineConfig(({ command }) => {
@@ -76,7 +76,7 @@ export default defineConfig(({ command }) => {
                     secure: false
                 }
             },
-            port: parseInt(env.DEV_SERVER_PORT || '52293'),
+            port: parseInt(env.VITE_DEV_SERVER_PORT || '52293'),
             https: httpsConfig
         } : undefined
     };

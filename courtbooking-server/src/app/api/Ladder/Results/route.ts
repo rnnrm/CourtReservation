@@ -9,7 +9,7 @@ import { formatScore } from "../formatScore";
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const competitionName = url.searchParams.get("competitionName") ?? "";
-  if (!competitionName) return new Response("competitionName required", { status: 400, headers: { "content-type": "text/plain" } });
+  if (!competitionName) return NextResponse.json({ error: "competitionName required" }, { status: 400 });
 
   const matches = await prisma.matchResult.findMany({
     where: { Confirmed: true, CompetitionName: competitionName },

@@ -31,12 +31,6 @@ function App({ offline }) {
                         aria-labelledby={`offcanvasNavbarLabel-expand-md`}
                         placement="end"
                     >
-                        {/*<Offcanvas.Header closeButton>*/}
-                        {/*    */}{/*<Offcanvas.Title id={`offcanvasNavbarLabel-expand-${expand}`}>*/}
-                        {/*    */}{/*    Offcanvas*/}
-                        {/*    */}{/*</Offcanvas.Title>*/}
-                        {/*</Offcanvas.Header>*/}
-                        {/*<Offcanvas.Body>*/}
                             <Nav variant="underline" defaultActiveKey="/" className="justify-content-end flex-grow-1 pe-3">
                                 <Nav.Link eventKey="/" as={Link} to="/">Account</Nav.Link>
                             <Nav.Link eventKey="/reservations" as={Link} to="/reservations">Book court</Nav.Link>
@@ -52,22 +46,8 @@ function App({ offline }) {
                                 <NavDropdown.Item eventKey="Doubles" as={Link} to="/ladder/Doubles Ladder">
                                     Doubles
                                 </NavDropdown.Item>
-                                {/*<NavDropdown.Divider />
-                                <NavDropdown.Item href="#action5">
-                                    Tournament
-                                </NavDropdown.Item>*/}
                             </NavDropdown>
                             </Nav>
-                            {/*<Form className="d-flex">*/}
-                            {/*    <Form.Control*/}
-                            {/*        type="search"*/}
-                            {/*        placeholder="Search"*/}
-                            {/*        className="me-2"*/}
-                            {/*        aria-label="Search"*/}
-                            {/*    />*/}
-                            {/*    <Button variant="outline-success">Search</Button>*/}
-                            {/*</Form>*/}
-                        {/*</Offcanvas.Body>*/}
                     </Navbar.Collapse>
                 </Container>
             </Navbar>

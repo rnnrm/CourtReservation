@@ -5,7 +5,7 @@ export async function GET(req: Request) {
   try {
     const session = await getSessionUser(req);
     if (!session) {
-      return new Response("Unauthorized", { status: 401, headers: { "content-type": "text/plain" } });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     return NextResponse.json({
@@ -16,6 +16,6 @@ export async function GET(req: Request) {
     });
   } catch (err) {
     console.error("auth/check error", err);
-    return new Response("Unauthorized", { status: 401, headers: { "content-type": "text/plain" } });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 }

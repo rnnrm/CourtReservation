@@ -3,6 +3,7 @@ import Form from 'react-bootstrap/Form';
 import { post } from './Utility.js';
 import { useNavigate } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
+import { flushSync } from 'react-dom';
 
 const Login = ({ user, setUser }) => {
     const [loginErrorText, setLoginErrorText] = useState('');
@@ -54,7 +55,7 @@ const Login = ({ user, setUser }) => {
             Password: formData.get('password')
         },
             (response) => {
-                let message = response;
+                let message = response.error; 
                 if (response.title) {
                     if (response.errors) {
                         message = Object.values(response.errors).join(" ");
@@ -78,7 +79,7 @@ const Login = ({ user, setUser }) => {
             Password: formData.get('password')
         },
             (response) => {
-                let message = response;
+                let message = response.error; 
                 if (response.title) {
                     if (response.errors) {
                         message = Object.values(response.errors).join(" ");
@@ -98,12 +99,15 @@ const Login = ({ user, setUser }) => {
     }
 
     async function forgotPassword(prevState, formData) {
+        flushSync(() => setLoginErrorText(''));
         var email = formData.get('email');
         var response = await post("/api/auth/sendResetLink", { userEmail: email }, null);
         if (response.ok)
-            alert("Email with reset link was sent to: " + email);
-        else
-            alert(response);
+            setLoginErrorText("Email with reset link was sent to: " + email);
+        else {
+            let message = response.error;
+            setLoginErrorText(message);
+        }
     }
 
     return (
@@ -138,10 +142,6 @@ const Login = ({ user, setUser }) => {
                             </Button>
                             <br/>
                             <Button variant="" type="submit" formAction={forgotAction} disabled={forgotIsPending}><u>Reset password</u></Button>
-                            {/*<br/>
-                            <Button className="m-1" id="google" onClick={() => window.location.href = "/api/auth/login-google"} type="submit" formAction={() => { }}>
-                                Sign in with Google
-                            </Button>*/}
                         </div>
                         
                     </>)

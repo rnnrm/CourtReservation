@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const competitionName = url.searchParams.get("competitionName") ?? "";
-  if (!competitionName) return new Response("competitionName required", { status: 400, headers: { "content-type": "text/plain" } });
+  if (!competitionName) return NextResponse.json({ error: "competitionName required" }, { status: 400 });
 
   const competitors = await prisma.competitor.findMany({
     where: { Competition: competitionName },

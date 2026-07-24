@@ -29,7 +29,7 @@ const ResetPassword = () => {
             if (response.status === 404)
                 return 'User not found';
             else
-                return 'Error changing password: '+ response;
+                return 'Error changing password: ' + response.error;
         }
     }
 

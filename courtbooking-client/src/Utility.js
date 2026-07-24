@@ -1,8 +1,11 @@
 
 export const post = async (url, obj, errorResponses, method = "POST") => {
     let response;
+    const API_BASE = import.meta.env.VITE_DEV_SERVER_PORT ? `http://localhost:${import.meta.env.VITE_DEV_SERVER_PORT}` : "";
+    const fullurl = API_BASE + url;
+    let msg = "";
     try {
-        response = await fetch(url, {
+        response = await fetch(fullurl, {
             method: method,
             credentials: 'include',
             headers: {
@@ -13,25 +16,31 @@ export const post = async (url, obj, errorResponses, method = "POST") => {
         });
 
         if (!response.ok) {
-            const contentType = response.headers.get("content-type");
-            if (!contentType || !contentType.includes("application/json") && !contentType.includes("application/problem+json")) {
-                console.log("nonjson error: ", errorStatus(response.status));
-                if (errorResponses)
-                    errorResponses(errorStatus(response));
-            } else  {
-                response = await response.json();
-                console.log("application/json error: ",response);
-                if (errorResponses)
-                    errorResponses(response);
+            try {
+                const contentType = response.headers.get("content-type");
+                if (contentType?.includes("application/json") || contentType?.includes("application/problem+json"))
+                    msg = await response.clone().json();
+                else if (contentType?.includes("text/plain"))
+                    msg = await response.clone().text();
+                else
+                    msg = errorStatus(response.status)
+            } catch (error) {
+                msg = error;
             }
+
+            if (errorResponses)
+                errorResponses(msg);
+
+            console.log("error: ", JSON.stringify(msg));
         }
     } catch (error) {
         console.error('Fetch request failed', error);
     }
 
-    return response;
+    return { ok: response.ok, status: response.status, json: () => response.json(), error: msg.error, response };
 }
 
 export const errorStatus = (status) => {
-    return status +" "+ status < 300 ? 'Success' : status < 400 ? 'Redirection' : status < 500 ? 'Client/authorization Error' : 'Server Error';
+    let msg = status < 300 ? 'Success' : status < 400 ? 'Redirection' : status < 500 ? 'Client/authorization Error' : 'Server Error';
+    return status + " " + msg;
 }

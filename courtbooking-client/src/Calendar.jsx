@@ -6,6 +6,7 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from "@fullcalendar/interaction" // needed for dayClick
 import { post } from './Utility.js';
 export default function Calendar({ user, court }) {
+    let serverUrl = import.meta.env.VITE_DEV_SERVER_PORT ? `http://localhost:${import.meta.env.VITE_DEV_SERVER_PORT}/` : "";
 /*
     const recurringReservation = (event) => {
 
@@ -179,7 +180,7 @@ export default function Calendar({ user, court }) {
                 //events={events}
                 events={{
                     id: 'backendServerEventSourceId',
-                    url: 'api/Bookings',
+                    url: serverUrl + 'api/Bookings',
                     extraParams: {
                         court: court
                     },

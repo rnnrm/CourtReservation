@@ -31,12 +31,12 @@ export async function GET(req: Request) {
 export async function DELETE(req: Request) {
   const session = await getSessionUser(req);
   if (!session || !session.roles.includes("Admin")) {
-    return new Response("Unauthorized", { status: 403, headers: { "content-type": "text/plain" } });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
 
   const body = await req.json();
   const id = typeof body === "string" ? body : body?.id ?? body?.Id;
-  if (!id) return new Response("Id required", { status: 400, headers: { "content-type": "text/plain" } });
+  if (!id) return NextResponse.json({ error: "Id required" }, { status: 400 });
 
   await prisma.reservation.deleteMany({ where: { ownerId: id } });
   await prisma.userRole.deleteMany({ where: { UserId: id } });

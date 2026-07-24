@@ -17,47 +17,47 @@ function setTokenCookieStr(token: string, maxAgeSec = COOKIE_MAX_AGE) {
 export async function POST(req: Request) {
   const body = await req.json();
   const { Email, Password } = body ?? {};
-  if (!Email || !Password) return new Response("Missing credentials", { status: 400, headers: { "content-type": "text/plain" } });
+  if (!Email || !Password) return NextResponse.json({ error: "Missing credentials" }, { status: 400 });
 
   // find aspnet user by email
   const aspUser = await prisma.appUser.findFirst({ where: { Email: Email } });
-  if (!aspUser) return new Response("User not found", { status: 404, headers: { "content-type": "text/plain" } });
+  if (!aspUser) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
   // check Node-side hash first
   const nodeUser = await prisma.nodeUser.findUnique({ where: { UserId: aspUser.Id } });
   if (nodeUser) {
     try {
       const ok = await argon2.verify(nodeUser.passwordHash, Password);
-      if (!ok) return new Response("Invalid credentials", { status: 401, headers: { "content-type": "text/plain" } });
+      if (!ok) return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
       
-  const roles = await prisma.userRole.findMany({
-    where: { UserId: aspUser.Id },
-    include: { role: true },
-  });
-  const roleNames = roles.map((r: any) => r.role?.Name).filter(Boolean) as string[];
-  var role = roleNames.includes("Admin") ? "Admin" : roleNames.includes("Member") ? "Member" : "Guest";
+      const roles = await prisma.userRole.findMany({
+        where: { UserId: aspUser.Id },
+        include: { role: true },
+      });
+      const roleNames = roles.map((r: any) => r.role?.Name).filter(Boolean) as string[];
+      var role = roleNames.includes("Admin") ? "Admin" : roleNames.includes("Member") ? "Member" : "Guest";
       const token = signToken({ sub: aspUser.Id, name: aspUser.UserName, securityStamp: aspUser.SecurityStamp });
       const res = NextResponse.json({ id: aspUser.Id, name: aspUser.UserName, role: role, MemberNumber: aspUser.MemberNumber });
       res.headers.set("Set-Cookie", setTokenCookieStr(token));
       return res;
     } catch (err) {
       console.error("argon verify error", err);
-      return new Response("Server error", { status: 500, headers: { "content-type": "text/plain" } });
+      return NextResponse.json({ error: "Server error" }, { status: 500 });
     }
   }
 
   // fallback: verify ASP.NET hash
-  if (!aspUser.PasswordHash) return new Response("No password set", { status: 401, headers: { "content-type": "text/plain" } });
+  if (!aspUser.PasswordHash) return NextResponse.json({ error: "No password set" }, { status: 401 });
 
   let matched = false;
   try {
     matched = verifyAspNetPassword(aspUser.PasswordHash!, Password);
   } catch (err) {
     console.error("ASP.NET hash verify error:", (err as Error).message);
-    return new Response("Server error verifying password", { status: 500, headers: { "content-type": "text/plain" } });
+    return NextResponse.json({ error: "Server error verifying password" }, { status: 500 });
   }
 
-  if (!matched) return new Response("Invalid credentials", { status: 401, headers: { "content-type": "text/plain" } });
+  if (!matched) return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
 
   // on success, create a Node-side argon2 hash to avoid future ASP.NET parsing
   try {

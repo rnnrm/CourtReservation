@@ -6,13 +6,13 @@ import { NextResponse } from "next/server";
 export async function PATCH(req: Request) {
   const session = await getSessionUser(req);
   if (!session || !session.roles.includes("Admin")) {
-    return new Response("Unauthorized", { status: 403, headers: { "content-type": "text/plain" } });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
 
   const body = await req.json();
   const id = body?.Id ?? body?.id;
   const roleName = body?.Role ?? body?.role;
-  if (!id || !roleName) return new Response("Id and Role required", { status: 400, headers: { "content-type": "text/plain" } });
+  if (!id || !roleName) return NextResponse.json({ error: "Id and Role required" }, { status: 400 });
 
   let role = await prisma.role.findFirst({ where: { Name: roleName } });
   if (!role) {

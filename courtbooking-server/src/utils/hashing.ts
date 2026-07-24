@@ -1,10 +1,9 @@
-
 import crypto from "crypto";
-// Parameters matching ASP.NET Identity defaults
+// Parameters matching ASP.NET Identity v3 defaults
 const ITERATIONS = 10000;
 const SALT_SIZE = 16;   // 128-bit salt
 const SUBKEY_SIZE = 32; // 256-bit subkey
-const HASH_ALGO = "sha512";
+const HASH_ALGO = "sha256"; // MUST match ASP.NET Identity v3 (HMAC-SHA256)
 
 export function hashPassword(password: string) {
   // Generate random salt
