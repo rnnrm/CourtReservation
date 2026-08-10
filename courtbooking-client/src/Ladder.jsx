@@ -93,7 +93,7 @@ const Ladder = ({ user }) => {
                 <div style={{maxHeight:"300px",overflowY:"auto"}}>
                     {matchResults.map((result, i) => (
                         <div key={i}>
-                            {result.winner1} {result.winner2 ? ' & '+result.winner2 :""}<sup style={{ color: "lightgreen" }} >+{result.pointsChange}</sup> <i>{adjectives[i]} </i>
+                            {result.winner1} {result.winner2 ? ' & '+result.winner2 :""}<sup style={{ color: "lightgreen" }} >+{result.pointsChange}</sup> <i>{/*adjectives[i]*/}defeated </i>
                             {result.loser1} {result.loser2 ? ' & ' + result.loser2 : ""}<sup style={{ color: "red" }} >-{result.pointsChange} </sup>
                             <br/><b> {result.score} </b> on {result.datePlayed}
                             <hr />
