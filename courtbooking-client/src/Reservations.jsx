@@ -13,10 +13,11 @@ const Reservations = ({ user }) => {
 
     return (
         <>
+            {!user && <>You must <a href="/">log in</a> to make a reservation.</>}
             <Tabs
                 defaultActiveKey={Number(import.meta.env["VITE_DEFAULT_COURT"]) }
                 id="uncontrolled-tab-example"
-                className="mb-3 mt-5"
+                className="mb-3"
                 activeKey={key}
                 onSelect={(k) => setKey(k)}
             >
@@ -25,7 +26,7 @@ const Reservations = ({ user }) => {
                     let description = import.meta.env[`VITE_COURT_DESCRIPTION${i + 1}`];
                     return (
                         <Tab eventKey={i + 1} title={title} key={i + 1}>
-                            <h2>{description}</h2>
+                            <h3>{description}</h3>
                             <Calendar user={user} court={i + 1} />
                 </Tab>
                     );

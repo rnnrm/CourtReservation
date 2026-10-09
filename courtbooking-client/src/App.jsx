@@ -52,7 +52,7 @@ function App({ offline }) {
                 </Container>
             </Navbar>
 
-            <div>
+            <div className="mt-5 pt-3">
                 <Outlet />
                 {(offline) ?
                     <Alert variant="danger" onClose={() => { }} dismissible>
