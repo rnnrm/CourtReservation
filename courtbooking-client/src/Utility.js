@@ -1,8 +1,9 @@
 
 export const post = async (url, obj, errorResponses, method = "POST") => {
     let response;
-    const API_BASE = import.meta.env.VITE_DEV_SERVER_PORT ? `http://localhost:${import.meta.env.VITE_DEV_SERVER_PORT}` : "";
+    const API_BASE = import.meta.env.VITE_DEV_SERVER_PORT ? `http://localhost:${import.meta.env.VITE_DEV_SERVER_PORT}/` : "";
     const fullurl = API_BASE + url;
+
     let msg = "";
     try {
         response = await fetch(fullurl, {
@@ -44,3 +45,14 @@ export const errorStatus = (status) => {
     let msg = status < 300 ? 'Success' : status < 400 ? 'Redirection' : status < 500 ? 'Client/authorization Error' : 'Server Error';
     return status + " " + msg;
 }
+
+export const getRoleColour = (role) => {
+    switch (role) {
+        case 'Admin':
+            return 'hsl(360, 50%, 50%)';
+        case 'Member':
+            return 'hsl(190, 50%, 50%)';
+        default:
+            return 'hsl(60, 50%, 50%)';
+    }
+};

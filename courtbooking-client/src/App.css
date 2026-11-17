@@ -13,3 +13,31 @@ th, td {
 .fc-event-main {
     overflow: hidden;
 }
+
+.fc-event-content {
+    overflow: hidden;
+    white-space: normal;
+}
+
+.fc-event-description {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    opacity: 0.9;
+}
+
+@media (max-width: 576px) {
+    .fc .fc-header-toolbar {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .fc .fc-toolbar-chunk {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .fc .fc-toolbar-chunk:last-child {
+        flex-wrap: wrap;
+    }
+}

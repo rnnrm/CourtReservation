@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.2752196">
   <PropertyGroup>
-    <BuildCommand>
-    </BuildCommand>
+    <StartupCommand>npm run dev</StartupCommand>
+    <BuildCommand>npm run build</BuildCommand>
+    <ShouldRunBuildScript>false</ShouldRunBuildScript>
   </PropertyGroup>
   <ItemGroup>
     <None Remove=".next\**" />
@@ -18,6 +19,10 @@
     <TypeScriptConfiguration Remove="tsconfig.json" />
   </ItemGroup>
   <ItemGroup>
+    <None Include=".vscode\launch.json" />
     <None Include="tsconfig.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
 </Project>

@@ -99,3 +99,9 @@ secrets/
 /courtbooking-server/data dump
 /postgres_migration
 /courtbooking-server/datadump
+/courtbooking-client/src/files.txt
+/courtbooking-client/files.txt
+/courtbooking-server/files.txt
+/__EFMigrationsHistory.json
+/courtbooking-server/src/files.txt
+/courtbooking-client/.env

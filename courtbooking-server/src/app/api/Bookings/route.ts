@@ -21,6 +21,7 @@ function formatReservationForOutput(r: any) {
     backgroundColor: r.BackgroundColor,
     extendedProps: {
       owner: r.ownerId ?? "",
+      ownerRole: r.ownerRole ?? getOwnerRole(r.owner),
       court: r.court ?? 0,
       description: r.Description ?? null,
     },
@@ -42,6 +43,17 @@ export async function GET(req: Request) {
 
   const rows = await prisma.reservation.findMany({
     where,
+    include: {
+      owner: {
+        include: {
+          userRoles: {
+            include: {
+              role: true,
+            },
+          },
+        },
+      },
+    },
     orderBy: { Start: "asc" },
   });
 
@@ -91,8 +103,23 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
+  const session = await getSessionUser(req);
+
+  if (!session) {
+    return NextResponse.json(
+      { error: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
   const body = await req.json();
-  if (!body) return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+
+  if (!body) {
+    return NextResponse.json(
+      { error: "Bad Request" },
+      { status: 400 }
+    );
+  }
 
   const created = await prisma.reservation.create({
     data: {
@@ -104,14 +131,23 @@ export async function POST(req: Request) {
       AllDay: body.AllDay ?? null,
       ClassName: body.ClassName ?? null,
       BackgroundColor: body.BackgroundColor ?? null,
-      ownerId: body.ExtendedProps?.owner ?? body.ownerId ?? "",
+      ownerId: session.id,
       court: body.ExtendedProps?.court ?? body.court ?? 0,
       Description: body.ExtendedProps?.description ?? body.description ?? null,
     },
   });
 
-  // Return created reservation using same output format
-  return NextResponse.json(formatReservationForOutput(created), { status: 201 });
+  return NextResponse.json(
+    formatReservationForOutput({
+      ...created,
+      ownerRole: session.roles.includes("Admin")
+        ? "Admin"
+        : session.roles.includes("Member")
+          ? "Member"
+          : "Guest"
+    }),
+    { status: 201 }
+  );
 }
 
 export async function PUT(req: Request) {
@@ -163,4 +199,15 @@ export async function DELETE(req: Request) {
 
   await prisma.reservation.delete({ where: { Id: bookingId } });
   return NextResponse.json({ message: "Booking deleted" }, { status: 204 });
+}
+
+function getOwnerRole(owner: any) {
+  const roleNames = owner?.userRoles
+    ?.map((userRole: any) => userRole.role?.Name)
+    .filter(Boolean) ?? [];
+
+  if (roleNames.includes("Admin")) return "Admin";
+  if (roleNames.includes("Member")) return "Member";
+
+  return "Guest";
 }
